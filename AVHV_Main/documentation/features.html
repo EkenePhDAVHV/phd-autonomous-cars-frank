@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features</title>
+
+    <style>
+        body{
+           font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; 
+           padding: 20px;
+        }
+
+        body > ol > li > ol {
+            list-style-type: lower-alpha;
+            margin-top: 10px;
+        }
+
+        body > ol > li > ol > li > ol {
+            list-style-type: lower-roman;
+        }
+
+        body > ol > li {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 30px;
+        }
+
+        body > ol > li > ol > li {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        body > ol > li > ol > li > ol > li {
+            font-size: 17px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <h2>Features Included in Project</h2>
+    <ol>
+        <li>Output Generation (For both AVs and HVs)
+            <ol type="a">
+                <li>CSVs (Comma Separated Values)
+                    <ol>
+                        <li>Values: Speed, Safe Distance, Reaction Time, Stopping Time</li>
+                    </ol>
+                </li>
+
+                <li>Histograms Plots
+                    <ol>
+                        <li>Safe Distance</li>
+                        <li>Speed</li>
+                        <li>Deceleration Force</li>
+                        <li>Reaction Time</li>
+                        <li>Stopping Time</li>
+                    </ol>
+                </li>
+                <li>
+                    Normal Distribution Plot
+                    <ol>
+                        <li>Safe Distance</li>
+                    </ol>
+                </li>
+                <li>
+                    Scatter Plot
+                    <ol>
+                        <li>Stopping Time</li>
+                    </ol>
+                </li>
+                <li>
+                    Experiment Summary (PDF and PNG with plots)
+                    <ol>
+                        <li>Congestion</li>
+                        <li>No. of Collisions</li>
+                        <li>Avg. Braked Cars per min</li>
+                        <li>Avg. Safe Distance</li>
+                        <li>Capacity (Cars/min)</li>
+                        <li>Total Simulation Time</li>
+                    </ol>
+                </li>
+            </ol>
+        </li>
+        <li>Documentation (<a href="https://docs.google.com/document/d/1qZBp3pQKVnc_R7J_bEMO8ifyJRImBU7qZbwQmCQYEPA/edit?usp=sharing" target="_blank">How the System Works</a>)</li>
+    </ol>
+
+    <p>RN - Reservation Nodes</p>
+    <p>TL - Traffic Lights</p>
+    <p>CAwSD4WI - Collision Avoidance with Safe Distance and 4 Way
+        Intersection</p><br/>
+<p>Congestion: Amount of cars per minute around an intersection or the number
+    of
+    collisions prevented.</p>
+
+<p>Collision: The number of collisions that occurred.</p>
+
+<p>Braked Cars per Min: The average number of cars braked every minute.</p>
+
+<p>Average Safe Distance (AV): The average safe distance every second for AVs
+    .</p>
+
+<p>Average Safe Distance (HV): The average safe distance every second for HVs
+    .</p>
+
+<p>Capacity AV - car(s) / min: The average number of AV cars that reach the
+    destination every minute.</p>
+
+<p>Capacity HV - car(s) / min: The average number of HV cars that reach the
+    destination every minute.</p>
+
+<p>Total Simulation Time (s): Total time of simulation for each experiment
+    method.</p>
+</body>
+</html>

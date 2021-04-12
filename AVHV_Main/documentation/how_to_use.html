@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use</title>
+
+    <style>
+        body{
+            width: 900px;
+           font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; 
+           padding: 20px;
+        }
+
+        body > ol > li > ol {
+            list-style-type: lower-alpha;
+            margin-top: 10px;
+        }
+
+        body > ol > li > ol > li > ol {
+            list-style-type: lower-roman;
+        }
+
+        body > ol > li {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 30px;
+        }
+
+        body > ol > li > ol > li {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        body > ol > li > ol > li > ol > li {
+            font-size: 17px;
+            font-weight: normal;
+        }
+
+        body > ol > li > span {
+            font-size: 17px;
+            font-weight: normal;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        body > ol > li > ol > li > span {
+            font-size: 17px;
+            font-weight: normal;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
+    </style>
+</head>
+<body>
+    <h2>How to Use</h2>
+    <ol>
+        <li>To Compile Simulation
+            <ol>
+                <li>
+                    Go to the top level of the project folder of the project in PyCharm (AVHV_Main) and run 
+                    <a href="../tests" target="_blank">tests/test.py</a>.
+                    <span>You can change simulation settings like time length in <em>AVHV_Main/tests/test.py</em> and 
+                        route combination and number of cars in <em>AVHV_Main/tests/route_catalogue.py</em> although 
+                        these (route combination and number of cars) have been set to be produced randomly at compile time. </span>
+
+                    <span>Depending on the length of time the simulation is set for and the number of cars involved, 
+                        this compilation may take any where from a few seconds to a few hours - this is not a bug but a feature.</span>
+                </li>
+            </ol>
+        </li>
+        <li>To Run Simulation
+            <ol>
+                <li>Go to the top level of the project folder <a href="../" target="_blank">AVHV_Main</a> 
+                    and open viewer.html in your browser. Alternatively, <a href="../viewer.html" target="_blank">go directly here.</a>
+                    <span>Press Spacebar to start  the simulation. You can also use the left and right arrow keys to go to 
+                        previous and next frame respectively.</span>
+                </li>
+            </ol>
+        </li>
+        <li>To View Experiment Summary
+            <ol>
+                <li>On the viewer, click the "Experiment Summary (PDF)" link at the bottom right corner.
+                    <span>From the project folder, you can also find the experiment summary file at 
+                    <em>AVHV_Main/output/Experiment_Summary.pdf</em>. The plots representing the recorded values in the 
+                    summary file can be found in the <em>AVHV_Main/output/Experiment_Summary.png</em></span>
+
+                </li>
+            </ol>
+        </li>
+        <li>To View Simulation Outputs
+            <ol>
+                <li>Go to AVHV_Main/output/AVHV_Traffic_Lights for Experiment run with Traffic Lights.</li>
+                <li>Go to AVHV_Main/output/AVHV_CAwSD4WI for Experiment run with Car Avoidance with Safe Distance with 4 Way Intersection.</li>
+                <li>Go to AVHV_Main/output/AVHV_Reservation_Nodes for Experiment run with Reservation Nodes.</li>
+            </ol>
+            <span>See the list of outputs included in <a href="./features.html" target="_blank">Features/Inclusions</a></span>
+        </li>
+        <li>To View Documentation
+            <ol>
+                <li>Go to <a href="https://docs.google.com/document/d/1qZBp3pQKVnc_R7J_bEMO8ifyJRImBU7qZbwQmCQYEPA/edit?usp=sharing" target="_blank">
+                    How The System Works</a> (Online Documentation)</li>
+            </ol>
+        </li>
+    </ol>
+</body>
+</html>

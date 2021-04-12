@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Image Viewer</title>
+            <style>
+                body {
+                    font-family: "Arial", Sans;
+                    font-size: calc(12px + 2vmin);
+                    color: #BD8DB;
+                    background-color: #000000EE;
+                    padding:0px;
+                    margin:0px;
+                    max-width : 100%;
+                    max-height : 100%;
+                }
+                button {
+                    width:100%;
+                    margin : 0px;
+                    text-align:center;
+                    cursor: pointer;
+                }
+
+                .navigation_button {
+                    font-family: "Arial", Sans;
+                    font-size: calc(12px + 2vmin);
+                    background-color:#00000000;
+                    color: #E6E6FA;
+                    border:none;
+                    outline:none;
+                    margin : 0px;
+                    padding: 20px 10px 20px 10px;
+                    width : 33%;
+                    text-alight: center;
+                }
+
+                .display_image_info {
+
+                }
+
+                .display_image_container {
+                    max_width : 100vw;
+                    max_height : 100vh;
+                    margin:0px;
+                    padding:0px;
+                }
+                .display_image {
+                    display: block;
+                    object-fit: fill;
+                    margin:auto;
+                    padding:0px;
+                    max-width:100vw;
+                }
+            </style>
+    </head>
+    <body>
+        <script>
+            var image_location = "drawings/svgwriter_frame_";
+            var image_id = 0.00;
+            var image_extension = ".svg";
+            var old_image = null;
+            var player = 0;
+            var play = false;
+            var direction = false;
+            var time = 0;
+            var fps = 30;
+            var delta = 1 / parseFloat(fps);
+            var frame_length = delta * 0.001;
+
+            function update_image(){
+                time = (direction ? time + delta : time - delta);
+                if (time < 0) time = 0;
+                image_id = parseFloat(time).toFixed(2);
+                document.getElementById("display_image_id").innerHTML=String(image_id);
+                if (document.getElementById("display_image").src != null)
+                    old_image = document.getElementById("display_image").src;
+                document.getElementById("display_image").src=image_location + String(image_id) + image_extension;
+            };
+
+            function revert() {
+                document.getElementById("display_image").src=old_image;
+            }
+
+            document.onkeydown= function(key){ reactKey(key); }
+
+            function play_pause_simulation() {
+                play = !play;
+                if (play) {
+                    player = setInterval(function(){update_image();}, frame_length);
+                }
+                else {
+                    clearInterval(player);
+                }
+            }
+
+            function next_frame() {
+                direction=true;
+                update_image();
+            }
+
+            function prev_frame() {
+                direction=false;
+                update_image();
+            }
+
+            function reactKey(evt) {
+                if (evt.keyCode==32) {
+                    play_pause_simulation()
+                } else if (evt.keyCode==37) {
+                    prev_frame()
+                } else if (evt.keyCode==39) {
+                    next_frame()
+                }
+            }
+        </script>
+        <div class="navigation_menu">
+            <button class="navigation_button" onclick="prev_frame()">
+                Previous
+            </button>
+            <button class="navigation_button" onclick="play_pause_simulation()">
+                Start/Stop
+            </button>
+            <button class="navigation_button"onclick="next_frame">
+                Next
+            </button>
+        </div>
+        <div class = display_image_info>
+            Frame : <text id="display_image_id">Image ID</text>
+        </div>
+        <div class="display_image_container">
+            <img id="display_image" class="display_image" src="" onerror="revert()">
+        </div>
+        <script>
+            update_image(false);
+            direction=true;
+        </script>
+
+     </body>
+</html>

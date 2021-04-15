@@ -208,27 +208,35 @@ class Car(EnvironmentObject):
                         # canvas.add(line_object)
                         pass
 
-            car_object = Polygon(
-                points=([[self.position.draw(offset).x - 2,
-                          self.position.draw(offset).y - 6],
-                         [self.position.draw(offset).x + 5,
-                          self.position.draw(offset).y],
-                         [self.position.draw(offset).x - 2,
-                          self.position.draw(offset).y + 6]]),
-                stroke='red' if 'Aggressive' in self.name else 'blue',
-                stroke_width=2,
-                fill='#FF6644' if 'Aggressive' in self.name else '#7777FF',
-                style="z-index: 500"
-            )
+            car_object = Circle(center=(self.position.draw(offset).x,
+                                        self.position.draw(offset).y),
+                                r=8,
+                                stroke='red' if 'Aggressive' in self.name else 'blue',
+                                stroke_width=2,
+                                fill='#FF6644' if 'Aggressive' in self.name else '#7777FF',
+                                )
 
-            car_object.rotate(next_dir, ((self.position.draw(offset).x
-                                          - 2 +
-                                          self.position.draw(offset).x + 3 +
-                                          self.position.draw(offset).x - 2) / 3,
-                                         (self.position.draw(offset).y - 6 +
-                                          self.position.draw(offset).y +
-                                          self.position.draw(
-                                              offset).y + 6) / 3))
+            # car_object = Polygon(
+            #     points=([[self.position.draw(offset).x - 2,
+            #               self.position.draw(offset).y - 6],
+            #              [self.position.draw(offset).x + 5,
+            #               self.position.draw(offset).y],
+            #              [self.position.draw(offset).x - 2,
+            #               self.position.draw(offset).y + 6]]),
+            #     stroke='red' if 'Aggressive' in self.name else 'blue',
+            #     stroke_width=2,
+            #     fill='#FF6644' if 'Aggressive' in self.name else '#7777FF',
+            #     style="z-index: 500"
+            # )
+            #
+            # car_object.rotate(next_dir, ((self.position.draw(offset).x
+            #                               - 2 +
+            #                               self.position.draw(offset).x + 3 +
+            #                               self.position.draw(offset).x - 2) / 3,
+            #                              (self.position.draw(offset).y - 6 +
+            #                               self.position.draw(offset).y +
+            #                               self.position.draw(
+            #                                   offset).y + 6) / 3))
             canvas.add(car_object)
 
         super().draw_direction(canvas=canvas, offset=offset)
@@ -271,12 +279,16 @@ class Car(EnvironmentObject):
         super().physics_update(t)
 
         if self.acceleration.magnitude() > 0.0:
-            reaction_time = 0.1
+            self.reaction_time = 0.1
             random_factor = 1.0
 
             if 'Aggressive' in self.name:
-                reaction_time = 0.3
-                random_factor = random.uniform(1.0, 1.5)
+                if self.get_speed() > 0.0:
+                    self.reaction_time = self.safe_distance / self.get_speed()
+                else:
+                    self.reaction_time = 0.3
+
+                random_factor = random.uniform(1.0, 3.0)
 
             self.safe_distance = round(self.velocity.magnitude() * \
                                        random_factor * \
@@ -285,7 +297,7 @@ class Car(EnvironmentObject):
                                            math.pow(self.velocity.magnitude(),
                                                     2) / \
                                            self.acceleration.magnitude()) +
-                                       reaction_time,
+                                       self.reaction_time,
                                        2)
 
     def reach_node(self):
@@ -474,27 +486,29 @@ class Car(EnvironmentObject):
                             # self.decelerate(t, deceleration_force,
                             #                 centripetal_speed)
 
-            if self.velocity.magnitude() > 0.0:
-                if 'Gentle' in self.name:
-                    with open(self.file_path + str(self.file_names[0]) +
-                              ".csv", "a", encoding="utf8") as f:
-                        self.write_metrics(f)
-                elif 'Aggressive' in self.name:
-                    with open(self.file_path + str(self.file_names[1]) +
-                              ".csv", "a", encoding="utf8") as f:
-                        self.write_metrics(f)
-                else:
-                    pass
-                    # with open(self.file_path + "all.csv", "a",
-                    #           encoding="utf8") as f:
-                    #     self.write_metrics(f)
+        if 'Gentle' in self.name:
+            with open(self.file_path + str(self.file_names[0]) +
+                      ".csv", "a", encoding="utf8") as f:
+                self.write_metrics(f)
+        elif 'Aggressive' in self.name:
+            with open(self.file_path + str(self.file_names[1]) +
+                      ".csv", "a", encoding="utf8") as f:
+                self.write_metrics(f)
+        else:
+            with open(self.file_path + "all.csv", "a",
+                      encoding="utf8") as f:
+                self.write_metrics(f)
 
     def write_metrics(self, f):
+        try:
+            speed = round((self.safe_distance / self.velocity.magnitude()) *
+                          2.237, 2)
+        except ZeroDivisionError:
+            speed = 0.0
+
         full_str = str(self.name + "," +
-                       str(round(self.velocity.magnitude(), 2)) + "," +
+                       str(speed) + "," +
                        str(round(self.safe_distance, 2)) + "," +
                        str(round(self.reaction_time, 2)) + "," +
-                       str(round(self.safe_distance / self.velocity.magnitude(
-
-                       ), 2)) + "\n")
+                       str(self.current_time) + "\n")
         f.write(full_str)

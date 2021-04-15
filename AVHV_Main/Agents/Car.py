@@ -58,6 +58,8 @@ class Car(EnvironmentObject):
         self.initial_distance_before_rest = None
         self.is_reaching_destination = False
 
+        self.is_around_curve = False
+
         self.file_path = file_path
         self.file_names = file_names
 
@@ -95,27 +97,35 @@ class Car(EnvironmentObject):
                     self.route_cache[-2].position.direction(
                         self.route_cache[-1].position))
 
-            car_object = Polygon(
-                points=([[self.position.draw(offset).x - 2,
-                          self.position.draw(offset).y - 6],
-                         [self.position.draw(offset).x + 5,
-                          self.position.draw(offset).y],
-                         [self.position.draw(offset).x - 2,
-                          self.position.draw(offset).y + 6]]),
-                stroke='red' if 'Aggressive' in self.name else 'blue',
-                stroke_width=2,
-                fill='#FF6644' if 'Aggressive' in self.name else '#7777FF',
-                style="z-index: 500"
-            )
+            car_object = Circle(center=(self.position.draw(offset).x,
+                                        self.position.draw(offset).y),
+                                r=8,
+                                stroke='red' if 'Aggressive' in self.name else 'blue',
+                                stroke_width=2,
+                                fill='#FF6644' if 'Aggressive' in self.name else '#7777FF',
+                                )
 
-            car_object.rotate(next_dir, ((self.position.draw(offset).x
-                                          - 2 +
-                                          self.position.draw(offset).x + 3 +
-                                          self.position.draw(offset).x - 2) / 3,
-                                         (self.position.draw(offset).y - 6 +
-                                          self.position.draw(offset).y +
-                                          self.position.draw(
-                                              offset).y + 6) / 3))
+            # car_object = Polygon(
+            #     points=([[self.position.draw(offset).x - 2,
+            #               self.position.draw(offset).y - 6],
+            #              [self.position.draw(offset).x + 5,
+            #               self.position.draw(offset).y],
+            #              [self.position.draw(offset).x - 2,
+            #               self.position.draw(offset).y + 6]]),
+            #     stroke='red' if 'Aggressive' in self.name else 'blue',
+            #     stroke_width=2,
+            #     fill='#FF6644' if 'Aggressive' in self.name else '#7777FF',
+            #     style="z-index: 500"
+            # )
+            #
+            # car_object.rotate(next_dir, ((self.position.draw(offset).x
+            #                               - 2 +
+            #                               self.position.draw(offset).x + 3 +
+            #                               self.position.draw(offset).x - 2) / 3,
+            #                              (self.position.draw(offset).y - 6 +
+            #                               self.position.draw(offset).y +
+            #                               self.position.draw(
+            #                                   offset).y + 6) / 3))
             canvas.add(car_object)
         super().draw_direction(canvas=canvas, offset=offset)
 
@@ -156,12 +166,16 @@ class Car(EnvironmentObject):
         super().physics_update(t)
 
         if self.acceleration.magnitude() > 0.0:
-            reaction_time = 0.1
+            self.reaction_time = 0.1
             random_factor = 1.0
 
             if 'Aggressive' in self.name:
-                reaction_time = 0.3
-                random_factor = random.uniform(1.0, 1.5)
+                if self.get_speed() > 0.0:
+                    self.reaction_time = self.safe_distance / self.get_speed()
+                else:
+                    self.reaction_time = 0.3
+
+                random_factor = random.uniform(1.0, 3.0)
 
             self.safe_distance = round(self.velocity.magnitude() * \
                                        random_factor * \
@@ -170,7 +184,7 @@ class Car(EnvironmentObject):
                                            math.pow(self.velocity.magnitude(),
                                                     2) / \
                                            self.acceleration.magnitude()) +
-                                       reaction_time,
+                                       self.reaction_time,
                                        2)
 
     def reach_node(self):
@@ -199,6 +213,11 @@ class Car(EnvironmentObject):
 
                 next_dir = self.previous_node.position.direction(
                     self.route[0].position)
+
+                # print(math.degrees(next_dir))
+
+                # if 'GentleCar1' in self.name:
+                #     print(math.degrees(next_dir), self.route_list)
 
                 self.velocity.x = velocity_magnitude * math.cos(next_dir)
                 self.acceleration.x = accel_magnitude * math.cos(next_dir)
@@ -265,7 +284,7 @@ class Car(EnvironmentObject):
 
             # Start car if it is at rest
             if not self.should_brake_car and not self.should_bring_car_to_rest:
-                self.apply_force(t, moving_force)
+                self.apply_force(t, moving_force, self.is_around_curve)
             elif self.should_bring_car_to_rest:
                 self.decelerate(t, braking_force *
                                 self.initial_distance_before_rest / 27.5)
@@ -280,42 +299,61 @@ class Car(EnvironmentObject):
                     self.route[1].position))
 
                 # If the next 2 nodes don't form a straight line
-                if next_dir != 0.0 and next_dir != 90.0 and next_dir != -90.0:
+                if next_dir == -90.0:
                     if self.position.distance(
-                            self.route_cache[0].position) < 30.0:
+                            self.route_cache[0].position) < 10.0:
+                        self.is_around_curve = True
+                    # else:
+                    #     self.is_around_curve = False
 
-                        if not self.has_decelerated:
-                            deceleration_force = 2000
-                            radius = self.route[0].position.distance(
-                                self.route[1].position)
-                            centripetal_speed = self.centripetal_velocity(
-                                deceleration_force, radius,
-                                self.mass).magnitude()
+                # if next_dir != 0.0 or next_dir != 90.0 or next_dir != -90.0:
+                #
+                #     if self.position.distance(
+                #             self.route_cache[0].position) < 20.0:
+                #
+                #         if next_dir == -90.0:
+                #             self.is_around_curve = True
+                #
+                #         if not self.has_decelerated:
+                #             deceleration_force = 2000
+                #             radius = self.route[0].position.distance(
+                #                 self.route[1].position)
+                #             centripetal_speed = self.centripetal_velocity(
+                #                 deceleration_force, radius,
+                #                 self.mass).magnitude()
 
-                            # self.should_brake_car = True
-                            # self.decelerate(t, deceleration_force,
-                            #                 centripetal_speed)
+                # print(centripetal_speed)
 
-            if self.velocity.magnitude() > 0.0:
-                if 'Gentle' in self.name:
-                    with open(self.file_path + str(self.file_names[0]) +
-                              ".csv", "a", encoding="utf8") as f:
-                        self.write_metrics(f)
-                elif 'Aggressive' in self.name:
-                    with open(self.file_path + str(self.file_names[1]) +
-                              ".csv", "a", encoding="utf8") as f:
-                        self.write_metrics(f)
-                else:
-                    with open(self.file_path + "all.csv", "a",
-                              encoding="utf8") as f:
-                        self.write_metrics(f)
+                # self.velocity.x = centripetal_speed * math.cos(next_dir)
+                # self.velocity.y = centripetal_speed * math.sin(next_dir)
+
+                # self.should_brake_car = True
+                # self.decelerate(t, deceleration_force,
+                #                 centripetal_speed)
+
+        if 'Gentle' in self.name:
+            with open(self.file_path + str(self.file_names[0]) +
+                      ".csv", "a", encoding="utf8") as f:
+                self.write_metrics(f)
+        elif 'Aggressive' in self.name:
+            with open(self.file_path + str(self.file_names[1]) +
+                      ".csv", "a", encoding="utf8") as f:
+                self.write_metrics(f)
+        else:
+            with open(self.file_path + "all.csv", "a",
+                      encoding="utf8") as f:
+                self.write_metrics(f)
 
     def write_metrics(self, f):
+        try:
+            speed = round((self.safe_distance / self.velocity.magnitude()) *
+                          2.237, 2)
+        except ZeroDivisionError:
+            speed = 0.0
+
         full_str = str(self.name + "," +
-                       str(round(self.velocity.magnitude(), 2)) + "," +
+                       str(speed) + "," +
                        str(round(self.safe_distance, 2)) + "," +
                        str(round(self.reaction_time, 2)) + "," +
-                       str(round(self.safe_distance / self.velocity.magnitude(
-
-                       ), 2)) + "\n")
+                       str(self.current_time) + "\n")
         f.write(full_str)

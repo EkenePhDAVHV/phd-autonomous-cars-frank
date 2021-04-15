@@ -15,7 +15,7 @@ AVHV_total_cars = 100
 # ------------------------- (-8000) 45 ------------------------- (-10000)
 
 max_velocity = 10
-max_acceleration = 6
+max_acceleration = 80
 
 # Please experiment with these values here
 car_mass = 1200

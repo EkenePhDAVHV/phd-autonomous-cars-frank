@@ -68,8 +68,6 @@ class Plotter:
         df_obj_mean = df_obj.groupby(['car_name'], as_index=False).mean()
         df_obj.drop_duplicates(subset="car_name", keep='first', inplace=True)
 
-        # print(df_obj_mean)
-
         ax_num = []
         ax_num_mean = []
 

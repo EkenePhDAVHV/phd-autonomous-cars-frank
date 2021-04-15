@@ -64,6 +64,13 @@ class EnvironmentObject:
         self.should_accelerate = should_accelerate
         self.is_decelerating = False
 
+        self.has_set_initial_values = False
+        self.angle = 0.0
+        self.start_position_x = 0.0
+        self.start_position_y = 0.0
+
+        self.current_time = 0.0
+
         self.data = {}
         for metric in ('time', 'position', 'velocity', 'acceleration',
                        'speed', 'direction', 'nodes_left'):
@@ -97,7 +104,7 @@ class EnvironmentObject:
         if self.is_decelerating:
             self.velocity.add_self(self.acceleration.copy().scale(t))
 
-        self.velocity.cap_self(max_velocity)
+        # self.velocity.cap_self(max_velocity)
         self.velocity.round_to_self(2)
 
         self.position.add_self(self.velocity.copy().scale(t))
@@ -121,6 +128,8 @@ class EnvironmentObject:
 
         self.behaviour_update(t)
         self.physics_update(t)
+        self.current_time += t
+        self.current_time = round(self.current_time, 1)
 
         if record:
             self.data_update(t)
@@ -186,8 +195,10 @@ class EnvironmentObject:
                 stroke_width=200
             ))
 
-    def apply_force(self, t, magnitude, direction=None):
+    def apply_force(self, t, magnitude, is_around_curve=True, direction=None):
         """Applies force in a direction (changed from Degrees to Radians)"""
+
+        # print(self.direction)
 
         if direction is None:
             direction = self.direction
@@ -195,6 +206,24 @@ class EnvironmentObject:
         acceleration_due_to_force = Vector2(magnitude /
                                             self.mass).redirect_self(
             direction).round_to(2)
+
+        center_of_rotation_x = -30 / 2
+        center_of_rotation_y = 30 / 2
+        radius = 50
+        omega = 0.1  # Angular velocity
+
+        # if is_around_curve:
+        # if not self.has_set_initial_values:
+        #     self.angle = math.radians(0)  # Starting angle
+        #     self.position.x = self.position.x + radius * math.cos(self.angle)  # Starting position x
+        #     self.position.y = self.position.y - radius * math.sin(self.angle)  # Starting position y
+        #     self.has_set_initial_values = True
+        # else:
+        #     self.angle = self.angle + omega  # New angle, we add angular velocity
+        #     self.position.x = (self.position.x + radius * omega * math.cos(self.angle + math.pi / 2)) / 10  # New x
+        #     self.position.y = (self.position.y - radius * omega * math.sin(self.angle + math.pi / 2)) / 10  # New y
+        #     print(self.acceleration.x, self.acceleration.y)
+        # else:
 
         self.is_decelerating = False
         self.acceleration = acceleration_due_to_force.copy()
@@ -215,4 +244,4 @@ class EnvironmentObject:
             acceleration_due_to_force.y = -acceleration_due_to_force.y
 
             self.is_decelerating = True
-            self.acceleration = acceleration_due_to_force.copy()
+            # self.acceleration = acceleration_due_to_force.copy()

@@ -26,6 +26,8 @@ class TrafficLight(EnvironmentObject):
         self.acceleration_max = max_acceleration
         self.velocity_max = max_velocity
 
+        self.current_time = 0.0
+
         if len(self.cars) > self.max_queue:
             self.max_queue = len(self.cars)
             # self.throughput = 100

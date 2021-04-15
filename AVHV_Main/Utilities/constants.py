@@ -17,3 +17,9 @@ max_acceleration = 6
 car_mass = 1200
 moving_force = 1200
 braking_force = 1200
+
+simulation_time = 8.0
+sim_time_increment = 0.1
+
+ratio_simulation_time = 150.0
+ratio_sim_time_increment = 0.1

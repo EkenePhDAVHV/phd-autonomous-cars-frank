@@ -67,6 +67,8 @@ class EnvironmentObject:
         self.should_accelerate = should_accelerate
         self.is_decelerating = False
 
+        self.current_time = 0.0
+
         self.data = {}
         for metric in ('time', 'position', 'velocity', 'acceleration',
                        'speed', 'direction', 'nodes_left'):
@@ -124,6 +126,8 @@ class EnvironmentObject:
 
         self.behaviour_update(t)
         self.physics_update(t)
+        self.current_time += t
+        self.current_time = round(self.current_time, 1)
 
         if record:
             self.data_update(t)

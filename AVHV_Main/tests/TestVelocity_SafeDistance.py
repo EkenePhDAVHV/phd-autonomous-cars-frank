@@ -16,7 +16,7 @@ basename = os.path.basename(__file__)
 # get filename without extension
 current_file_name = os.path.splitext(basename)[0]
 
-file_path = "../output/AVHV_Reservation_Nodes/"
+file_path = "../output/experiment_results/"
 
 layout = LayoutList.cross_roads()
 

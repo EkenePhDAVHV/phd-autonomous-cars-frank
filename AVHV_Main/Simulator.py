@@ -6,6 +6,10 @@ import os
 import sys
 from datetime import datetime
 
+import pickle
+
+from AVHV_Main.Utilities.checkpoint import load_checkpoint, save_checkpoint
+
 import matplotlib.pyplot as plt
 from svgwrite import Drawing
 from svgwrite.shapes import *
@@ -23,7 +27,7 @@ from AVHV_Main.Utilities.Vector2 import Vector2
 class Simulation:
     def __init__(self, environment, time_end=10, time_increment=0.1,
                  debugging=False, active_routes=[None, None, None, None],
-                 file_path=None, file_names=[None, None],
+                 file_path=None, output_path=None, file_names=[None, None],
                  current_file_name=None, simulation_TL_values=None,
                  simulation_CAwSD4WI_values=None, file_path_TL=None,
                  file_path_CAwSD4WI=None):
@@ -32,10 +36,10 @@ class Simulation:
         self.environment = environment
 
         # Timing Control
-        self.__end_time = time_end
+        self.end_time = time_end
         self.__time_increment = time_increment
         self.__debug_counter = 0
-        self.__current_time = 0
+        self.current_time = 0
         self.__running_time = 0
 
         # Statistics
@@ -43,6 +47,7 @@ class Simulation:
         self.__reporter = None
 
         self.file_path = file_path
+        self.output_path = output_path
         self.file_names = file_names
         self.current_file_name = current_file_name
         self.file_path_TL = file_path_TL
@@ -58,84 +63,112 @@ class Simulation:
         self.__drawing_directory = "../drawings/"
         self.__drawing_prefix = "svgwriter_frame_"
 
-        self.active_routes = active_routes
+        state_file = os.path.dirname(
+            os.path.realpath(__file__)) + "/" + "state.pickle"
 
-        # Car counter
-        self.num_of_all_cars = 0
-        self.num_av = 0
-        self.num_hv = 0
-        self.num_no_label = 0
-        self.num_of_all_cars = 0
-        self.num_unique_routes = 0
+        backup_file = os.path.dirname(
+            os.path.realpath(__file__)) + "/" + "state.pickle.bak"
 
-        self.environment_objects = self.environment.environment_objects.copy()
-        spawner_objects = self.environment_objects[CarSpawner]
-        self.car_objects = self.environment_objects[Car]
+        if not os.path.exists(os.path.dirname(
+                os.path.realpath(__file__)) + "/" + "state.pickle"):
 
-        self.av_list = [cs for cs in spawner_objects if 'Gentle' in cs.name]
-        self.hv_list = [cs for cs in spawner_objects if 'Aggressive' in cs.name]
-        self.no_label_list = [cs for cs in spawner_objects if 'Gentle' not in
-                              cs.name and 'Aggressive' not in cs.name]
+            self.active_routes = active_routes
 
-        self.av_total_safe_distance = 0.0
-        self.hv_total_safe_distance = 0.0
-        self.no_label_total_safe_distance = 0.0
+            # Car counter
+            self.num_of_all_cars = 0
+            self.num_av = 0
+            self.num_hv = 0
+            self.num_no_label = 0
+            self.num_of_all_cars = 0
+            self.num_unique_routes = 0
 
-        self.av_averages_safe_distance = 0.0
-        self.hv_averages_safe_distance = 0.0
-        self.no_label_averages_safe_distance = 0.0
+            self.environment_objects = self.environment.environment_objects.copy()
+            spawner_objects = self.environment_objects[CarSpawner]
+            self.car_objects = self.environment_objects[Car]
 
-        self.av_average_safe_distance = 0.0
-        self.hv_average_safe_distance = 0.0
-        self.no_label_average_safe_distance = 0.0
+            self.av_list = [cs for cs in spawner_objects if 'Gentle' in cs.name]
+            self.hv_list = [cs for cs in spawner_objects if
+                            'Aggressive' in cs.name]
+            self.no_label_list = [cs for cs in spawner_objects if
+                                  'Gentle' not in
+                                  cs.name and 'Aggressive' not in cs.name]
 
-        self.total_braked_cars = 0.0
-        self.average_braked_cars_per_min = 0.0
+            self.av_total_safe_distance = 0.0
+            self.hv_total_safe_distance = 0.0
+            self.no_label_total_safe_distance = 0.0
 
-        self.simulation_TL_values = simulation_TL_values
-        self.simulation_CAwSD4WI_values = simulation_CAwSD4WI_values
+            self.av_averages_safe_distance = 0.0
+            self.hv_averages_safe_distance = 0.0
+            self.no_label_averages_safe_distance = 0.0
 
-        for cs in self.av_list:
-            self.num_av += cs.total_cars
+            self.av_average_safe_distance = 0.0
+            self.hv_average_safe_distance = 0.0
+            self.no_label_average_safe_distance = 0.0
 
-        for cs in self.hv_list:
-            self.num_hv += cs.total_cars
+            self.car_density = []
+            self.traffic_flow = []
+            self.car_speed = []
+            self.safe_distances = []
+            self.reaction_times = []
 
-        for cs in self.no_label_list:
-            self.num_no_label += cs.total_cars
+            self.total_braked_cars = 0.0
+            self.average_braked_cars_per_min = 0.0
 
-        self.num_of_all_cars += self.num_av + self.num_hv + self.num_no_label
+            self.simulation_TL_values = simulation_TL_values
+            self.simulation_CAwSD4WI_values = simulation_CAwSD4WI_values
 
-        # get all the used routes
-        all_cs_routes = [cs.route for cs in spawner_objects]
-        all_cs_routes_unique = []
+            for cs in self.av_list:
+                self.num_av += cs.total_cars
 
-        all_cs_routes_unique = [route for route in all_cs_routes if route
-                                not in all_cs_routes_unique]
+            for cs in self.hv_list:
+                self.num_hv += cs.total_cars
 
-        car_spawners = [cs for cs in
-                        self.environment.environment_objects[CarSpawner]]
+            for cs in self.no_label_list:
+                self.num_no_label += cs.total_cars
 
-        self.route1_num_cars = sum([cs.total_cars for cs in car_spawners if \
-                                    cs.route_list == self.active_routes[0]])
-        self.route2_num_cars = sum([cs.total_cars for cs in car_spawners if \
-                                    cs.route_list == self.active_routes[1]])
-        self.route3_num_cars = sum([cs.total_cars for cs in car_spawners if \
-                                    cs.route_list == self.active_routes[2]])
-        self.route4_num_cars = sum([cs.total_cars for cs in car_spawners if \
-                                    cs.route_list == self.active_routes[3]])
+            self.num_of_all_cars += self.num_av + self.num_hv + self.num_no_label
 
-        self.normal_dist = None
+            # get all the used routes
+            all_cs_routes = [cs.route for cs in spawner_objects]
+            all_cs_routes_unique = []
 
-        self.throughput_capacity_av = 0
-        self.throughput_capacity_hv = 0
+            all_cs_routes_unique = [route for route in all_cs_routes if route
+                                    not in all_cs_routes_unique]
 
-        self.experiment_values = []
+            car_spawners = [cs for cs in
+                            self.environment.environment_objects[CarSpawner]]
 
-        if self.file_path is not None:
-            self.normal_dist = Plotter(self.file_path)
+            self.route1_num_cars = sum([cs.total_cars for cs in car_spawners if \
+                                        cs.route_list == active_routes[0]])
+            self.route2_num_cars = sum([cs.total_cars for cs in car_spawners if \
+                                        cs.route_list == active_routes[1]])
+            self.route3_num_cars = sum([cs.total_cars for cs in car_spawners if \
+                                        cs.route_list == active_routes[2]])
+            self.route4_num_cars = sum([cs.total_cars for cs in car_spawners if \
+                                        cs.route_list == active_routes[3]])
+
+            self.normal_dist = None
+
+            self.throughput_capacity_av = 0
+            self.throughput_capacity_hv = 0
+
+            self.experiment_values = []
+
+            with open(os.path.dirname(
+                    os.path.realpath(__file__)) + "/" + "state.pickle",
+                      'wb') as g:
+                pickle.dump(self.__dict__, g)
+        else:
+            try:
+                with open(state_file, 'rb') as g:
+                    self.__dict__ = pickle.load(g)
+            except EOFError:
+                if os.path.exists(backup_file):
+                    with open(backup_file, 'rb') as g:
+                        self.__dict__ = pickle.load(g)
 
         self.__start_simulation()
+
         self.__write_documentation()
 
     def __write_documentation(self):
@@ -213,11 +246,11 @@ class Simulation:
 
             data = [['', 'w/ Reservation Nodes', 'w/ Traffic Lights',
                      "w/ Safe Distance and 4 Way Intersection"],
-                    ['Congestion',
+                    ['Waiting Time',
                      str(self.environment.collisions_prevented),
                      str(self.simulation_TL_values[0]),
                      str(self.simulation_CAwSD4WI_values[0])],
-                    ['No. of Collisions',
+                    ['No. of Brakings',
                      str(self.environment.occurred_collisions),
                      str(self.simulation_TL_values[1]),
                      str(self.simulation_CAwSD4WI_values[1])],
@@ -235,14 +268,14 @@ class Simulation:
                         self.hv_average_safe_distance, 2)),
                      str(self.simulation_TL_values[4]),
                      str(self.simulation_CAwSD4WI_values[4])],
-                    ['Capacity AV - car(s)/min',
-                     str(self.throughput_capacity_av),
-                     str(self.simulation_TL_values[5]),
-                     str(self.simulation_CAwSD4WI_values[5])],
-                    ['Capacity HV - car(s)/min',
-                     str(self.throughput_capacity_hv),
-                     str(self.simulation_TL_values[6]),
-                     str(self.simulation_CAwSD4WI_values[6])],
+                    # ['Capacity AV - car(s)/min',
+                    #  str(self.throughput_capacity_av),
+                    #  str(self.simulation_TL_values[5]),
+                    #  str(self.simulation_CAwSD4WI_values[5])],
+                    # ['Capacity HV - car(s)/min',
+                    #  str(self.throughput_capacity_hv),
+                    #  str(self.simulation_TL_values[6]),
+                    #  str(self.simulation_CAwSD4WI_values[6])],
                     ['Total Simulation Time (s)',
                      str(round(self.__running_time, 2)),
                      str(self.simulation_TL_values[7]),
@@ -338,25 +371,41 @@ class Simulation:
             values = [data[0][i], data[1][i], data[2][i]]
             if i == 0:
                 plt.title('Congestion')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 1:
-                plt.title('Occurred Collisions')
+                plt.title('Occurred Braking')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 2:
                 plt.title('Braked Cars per Min')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 3:
                 plt.title('Average Safe Distance (AV)')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 4:
                 plt.title('Average Safe Distance (HV)')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 5:
                 plt.title('Capacity AV - car(s) / min')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 6:
                 plt.title('Capacity HV - car(s) / min')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
             if i == 7:
                 plt.title('Total Simulation Time (s)')
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
 
             plt.bar(labels, values)
 
             plt.tight_layout(pad=2)
-            plt.savefig(f"{file_path}Experiment_Summary.png")
+            plt.savefig(f"{self.output_path}Experiment_Summary.png")
 
     def __calculate_blank(self):
         if isinstance(self.environment, Environment):
@@ -419,11 +468,11 @@ class Simulation:
     def __calculate_layout(self):
         self.__calculate_blank()
 
-        for layout_type, layout in self.environment.layout.items():
-            layout.draw_edges(canvas=self.__scene, offset=self.__min_bound)
-        for layout_type, layout in self.environment.layout.items():
-            layout.draw_nodes(canvas=self.__scene, offset=self.__min_bound)
-            layout.draw_text(canvas=self.__scene, offset=self.__min_bound)
+        # for layout_type, layout in self.environment.layout.items():
+        #     layout.draw_edges(canvas=self.__scene, offset=self.__min_bound)
+        # for layout_type, layout in self.environment.layout.items():
+        #     layout.draw_nodes(canvas=self.__scene, offset=self.__min_bound)
+        #     layout.draw_text(canvas=self.__scene, offset=self.__min_bound)
 
         text = [
             ["Press SPACEBAR to play/pause the simulation and LEFT and RIGHT "
@@ -445,18 +494,25 @@ class Simulation:
             ["50m", (167, 492), 12],
             ["~ Reservation Nodes C.A Control ~", (550, 125)],
             ["Cars braked:", (550, 160)],
-            ["Congestion:", (550, 187)],
-            ["Occurred Collisions:", (550, 214)],
+            # ["Congestion:", (550, 187)],
+            # ["Occurred Collisions:", (550, 214)],
             # ["Reservation Nodes Schematic", (550, 250), 16, "#0000FF",
             #  "font-family: Lucida Sans Unicode, Sans-serif; text-decoration: "
             #  "underline"],
             ["HOW TO USE", (550, 550), 15, "#0000FF",
              "font-family: Lucida Sans Unicode, Sans-serif; text-decoration: "
              "underline"],
-            ["Features/Inclusions", (550, 580), 15, "#0000FF",
+            ["Features/Inclusions/Definitions", (550, 580), 15, "#0000FF",
              "font-family: Lucida Sans Unicode, Sans-serif; text-decoration: "
              "underline"],
-            ["Experiment Summary (PDF)", (550, 610), 15, "#0000FF",
+            ["Experiment ", (550, 610), 15, "#0000FF",
+             "font-family: Lucida Sans Unicode, Sans-serif"],
+            ["Summary (PDF)", (640, 610), 15, "#0000FF",
+             "font-family: Lucida Sans Unicode, Sans-serif; text-decoration: "
+             "underline"],
+            ["/", (750, 610), 15, "#0000FF",
+             "font-family: Lucida Sans Unicode, Sans-serif"],
+            ["Chart (Image)", (760, 610), 15, "#0000FF",
              "font-family: Lucida Sans Unicode, Sans-serif; text-decoration: "
              "underline"],
             ["Experiment with previous methods", (550, 650), 15],
@@ -556,10 +612,10 @@ class Simulation:
             [f"{self.no_label_average_safe_distance} m", (230, 200)],
             [f"{round(self.__running_time, 2)}", (240, 240)],
             [f"{self.num_of_all_cars} ", (240, 265)],
-            [f"{round(self.__current_time, 2)}", (240, 290)],
-            [f"{len(self.environment.cars_braked)}", (665, 160)],
-            [f"{self.environment.collisions_prevented}", (725, 187)],
-            [f"{self.environment.occurred_collisions}", (725, 214)],
+            [f"{round(self.current_time, 2)}", (240, 290)],
+            [f"{self.environment.occurred_collisions}", (665, 160)],
+            # [f"{self.environment.collisions_prevented}", (725, 187)],
+            # [f"{self.environment.occurred_collisions}", (725, 214)],
         ]
 
         for t in text:
@@ -591,25 +647,29 @@ class Simulation:
         # Drawing prep
         for frame in os.listdir(self.__drawing_directory):
             os.remove(self.__drawing_directory + frame)
-        self.__draw_current(self.__current_time)
+        # self.__draw_current(self.current_time)
 
-        print("AVHV Control with Reservation Nodes - Please wait for a "
+        self.current_time = load_checkpoint(self, os.path.dirname(
+            os.path.realpath(__file__)) + "/" + "checkpoint.txt")
+
+        print("\nAVHV Control with Reservation Nodes - Please wait for a "
               "while...")
 
         # Progress bar
-        progress_bar = Tqdm(0, total=self.__end_time, file=sys.stdout)
+        progress_bar = Tqdm(self.current_time, total=self.end_time,
+                            file=sys.stdout, initial=self.current_time)
 
-        while self.__current_time < self.__end_time:
+        while self.current_time < self.end_time:
             debug = self.environment.update(delta_time=self.__time_increment,
                                             record=False)
-            debug = str.format("Tick: {:3.3f}\t", self.__current_time) + debug
+            debug = str.format("Tick: {:3.3f}\t", self.current_time) + debug
 
             # Check if Debug should run
-            if self.__debug_counter <= self.__current_time:
+            if self.__debug_counter <= self.current_time:
                 self.__debug_counter += self.__time_increment
 
                 # Data recording
-                self.environment.record_values(self.__current_time)
+                self.environment.record_values(self.current_time)
                 self.__reporter.record(self.__debug_counter)
                 if self.debugging:
                     print(debug)
@@ -618,6 +678,39 @@ class Simulation:
                     self.environment.passed_hv_cars + \
                     self.environment.passed_nl_cars == self.num_of_all_cars:
                 pass
+
+            self.car_density.append(
+                round(
+                    len(self.environment.environment_objects[Car]) * 2.5 / (
+                        2.4 * 0.6214),
+                    2))
+
+            self.traffic_flow.append(
+                round(
+                    len(self.environment.environment_objects[
+                            Car]) * 3600 / self.__time_increment,
+                    2))
+
+            self.car_speed.append(round(sum([car.get_speed() * 2.237 for car in
+                                             self.environment.environment_objects[
+                                                 Car]]) / len(
+                self.environment.environment_objects[Car]), 2))
+
+            safe_distances = [car.safe_distance for car in
+                              self.environment.environment_objects[Car] if
+                              'Aggressive' in car.name]
+
+            reaction_times = [car.reaction_time for car in
+                              self.environment.environment_objects[
+                                  Car] if
+                              'Aggressive' in car.name]
+
+            self.safe_distances.append(
+                round(sum(safe_distances) / len(safe_distances),
+                      2))
+
+            self.reaction_times.append(round(sum(reaction_times) / len(
+                reaction_times), 2))
 
             # Increment at the end
 
@@ -670,12 +763,55 @@ class Simulation:
                     self.no_label_averages_safe_distance = 0
 
                 # print([car.safe_distance for car in self.av_list])
-            self.__current_time += self.__time_increment
-            self.__draw_current(self.__current_time)
+            self.current_time += self.__time_increment
+
+            save_checkpoint(self, self.current_time, self.end_time,
+                            os.path.dirname(os.path.realpath(
+                                __file__)) + "/" + "checkpoint.txt",
+                            os.path.dirname(os.path.realpath(
+                                __file__)) + "/" + "state.pickle")
+
+            # self.__draw_current(self.current_time)
 
             progress_bar.update(self.__time_increment)
 
         progress_bar.close()
+
+        if self.output_path is not None:
+            # if self.simulation_TL_values is None or \
+            #         self.simulation_CAwSD4WI_values is None:
+            #     self.normal_dist = Plotter(self.output_path, [self.car_density])
+            # else:
+
+            self.normal_dist = Plotter(self.output_path,
+                                       [self.simulation_TL_values[8],
+                                        self.simulation_CAwSD4WI_values[8],
+                                        self.traffic_flow],
+                                       [self.simulation_TL_values[9],
+                                        self.simulation_CAwSD4WI_values[9],
+                                        self.car_density
+                                        ],
+                                       [self.simulation_TL_values[10],
+                                        self.simulation_CAwSD4WI_values[10],
+                                        self.car_speed
+                                        ],
+                                       [self.simulation_TL_values[11],
+                                        self.simulation_CAwSD4WI_values[11],
+                                        [self.environment.passed_av_cars,
+                                         self.environment.passed_hv_cars,
+                                         self.environment.passed_nl_cars]
+                                        ],
+                                       [self.simulation_TL_values[12],
+                                        self.simulation_CAwSD4WI_values[12],
+                                        self.safe_distances
+                                        ],
+                                       [self.simulation_TL_values[13],
+                                        self.simulation_CAwSD4WI_values[13],
+                                        self.reaction_times
+                                        ],
+                                       [self.num_of_all_cars, self.num_av,
+                                        self.num_hv]
+                                       )
 
         if self.normal_dist is not None and self.file_names[0] is not None and \
                 self.file_names[1] is not None:
@@ -684,7 +820,7 @@ class Simulation:
                     self.normal_dist.read_csv(file_name)
                 except:
                     pass
-                print(f'Open "{self.file_path}" for distributions and graphs')
+                print(f'Open "{self.output_path}" for distributions and graphs')
 
         try:
             self.av_average_safe_distance = round(
@@ -696,7 +832,7 @@ class Simulation:
         try:
             self.hv_average_safe_distance = round(
                 self.hv_average_safe_distance / (self.__running_time / \
-                                                  self.__time_increment))
+                                                 self.__time_increment))
         except ZeroDivisionError:
             self.hv_average_safe_distance = 0.0
 
@@ -731,12 +867,25 @@ class Simulation:
 
         self.experiment_values = [self.environment.collisions_prevented,
                                   self.environment.occurred_collisions,
-                                  average_braked_cars,
+                                  round(self.total_braked_cars * 60 /
+                                        (self.__running_time /
+                                         self.__time_increment),
+                                        2),
                                   round(self.av_average_safe_distance, 2),
                                   round(self.hv_average_safe_distance, 2),
                                   round(self.throughput_capacity_av, 2),
                                   round(self.throughput_capacity_hv, 2),
-                                  round(self.__running_time, 2)]
+                                  round(self.current_time, 2),
+                                  self.traffic_flow,
+                                  self.car_density,
+                                  self.car_speed,
+                                  [self.environment.passed_av_cars,
+                                   self.environment.passed_hv_cars,
+                                   self.environment.passed_nl_cars],
+                                  self.safe_distances,
+                                  self.reaction_times,
+                                  [self.num_av, self.num_hv]
+                                  ]
 
 
 if __name__ == '__main__':

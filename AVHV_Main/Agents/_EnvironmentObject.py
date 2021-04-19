@@ -101,8 +101,51 @@ class EnvironmentObject:
             if self.should_accelerate:
                 self.velocity.add_self(self.acceleration.copy().scale(t))
 
-        if self.is_decelerating:
-            self.velocity.add_self(self.acceleration.copy().scale(t))
+        if not self.checked_polarity_x:
+            if self.velocity.x < 0.0:
+                self.polarity_x = "-"
+            elif self.velocity.x > 0.0:
+                self.polarity_x = "+"
+            else:
+                self.polarity_x = None
+
+            if self.polarity_x is not None:
+                self.checked_polarity_x = True
+
+        if not self.checked_polarity_y:
+            if self.velocity.y < 0.0:
+                self.polarity_y = "-"
+            elif self.velocity.y > 0.0:
+                self.polarity_y = "+"
+            else:
+                self.polarity_y = None
+
+            if self.polarity_y is not None:
+                self.checked_polarity_y = True
+
+        # if self.is_decelerating:
+        #     if self.velocity.y < 0.0:
+        #         self.velocity.y -= self.acceleration.y * t
+        #     if self.velocity.x < 0.0:
+        #         self.velocity.x -= self.acceleration.x * t
+        #     if self.velocity.y > 0.0:
+        #         self.velocity.y -= self.acceleration.y * t
+        #     if self.velocity.x > 0.0:
+        #         self.velocity.x -= self.acceleration.x * t
+
+        self.velocity.add_self(self.acceleration.copy().scale(t))
+
+        if self.checked_polarity_x:
+            if self.velocity.x < 0.0 and self.polarity_x == "+":
+                self.velocity.x = 0.0
+            if self.velocity.x > 0.0 and self.polarity_x == "-":
+                self.velocity.x = 0.0
+
+        if self.checked_polarity_y:
+            if self.velocity.y < 0.0 and self.polarity_y == "+":
+                self.velocity.y = 0.0
+            if self.velocity.y > 0.0 and self.polarity_y == "-":
+                self.velocity.y = 0.0
 
         # self.velocity.cap_self(max_velocity)
         self.velocity.round_to_self(2)
@@ -244,4 +287,4 @@ class EnvironmentObject:
             acceleration_due_to_force.y = -acceleration_due_to_force.y
 
             self.is_decelerating = True
-            # self.acceleration = acceleration_due_to_force.copy()
+            self.acceleration = acceleration_due_to_force.copy()

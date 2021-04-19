@@ -468,11 +468,11 @@ class Simulation:
     def __calculate_layout(self):
         self.__calculate_blank()
 
-        # for layout_type, layout in self.environment.layout.items():
-        #     layout.draw_edges(canvas=self.__scene, offset=self.__min_bound)
-        # for layout_type, layout in self.environment.layout.items():
-        #     layout.draw_nodes(canvas=self.__scene, offset=self.__min_bound)
-        #     layout.draw_text(canvas=self.__scene, offset=self.__min_bound)
+        for layout_type, layout in self.environment.layout.items():
+            layout.draw_edges(canvas=self.__scene, offset=self.__min_bound)
+        for layout_type, layout in self.environment.layout.items():
+            layout.draw_nodes(canvas=self.__scene, offset=self.__min_bound)
+            layout.draw_text(canvas=self.__scene, offset=self.__min_bound)
 
         text = [
             ["Press SPACEBAR to play/pause the simulation and LEFT and RIGHT "
@@ -647,7 +647,7 @@ class Simulation:
         # Drawing prep
         for frame in os.listdir(self.__drawing_directory):
             os.remove(self.__drawing_directory + frame)
-        # self.__draw_current(self.current_time)
+        self.__draw_current(self.current_time)
 
         self.current_time = load_checkpoint(self, os.path.dirname(
             os.path.realpath(__file__)) + "/" + "checkpoint.txt")
@@ -771,7 +771,7 @@ class Simulation:
                             os.path.dirname(os.path.realpath(
                                 __file__)) + "/" + "state.pickle")
 
-            # self.__draw_current(self.current_time)
+            self.__draw_current(self.current_time)
 
             progress_bar.update(self.__time_increment)
 
@@ -783,35 +783,37 @@ class Simulation:
             #     self.normal_dist = Plotter(self.output_path, [self.car_density])
             # else:
 
-            self.normal_dist = Plotter(self.output_path,
-                                       [self.simulation_TL_values[8],
-                                        self.simulation_CAwSD4WI_values[8],
-                                        self.traffic_flow],
-                                       [self.simulation_TL_values[9],
-                                        self.simulation_CAwSD4WI_values[9],
-                                        self.car_density
-                                        ],
-                                       [self.simulation_TL_values[10],
-                                        self.simulation_CAwSD4WI_values[10],
-                                        self.car_speed
-                                        ],
-                                       [self.simulation_TL_values[11],
-                                        self.simulation_CAwSD4WI_values[11],
-                                        [self.environment.passed_av_cars,
-                                         self.environment.passed_hv_cars,
-                                         self.environment.passed_nl_cars]
-                                        ],
-                                       [self.simulation_TL_values[12],
-                                        self.simulation_CAwSD4WI_values[12],
-                                        self.safe_distances
-                                        ],
-                                       [self.simulation_TL_values[13],
-                                        self.simulation_CAwSD4WI_values[13],
-                                        self.reaction_times
-                                        ],
-                                       [self.num_of_all_cars, self.num_av,
-                                        self.num_hv]
-                                       )
+            pass
+
+            # self.normal_dist = Plotter(self.output_path,
+            #                            [self.simulation_TL_values[8],
+            #                             self.simulation_CAwSD4WI_values[8],
+            #                             self.traffic_flow],
+            #                            [self.simulation_TL_values[9],
+            #                             self.simulation_CAwSD4WI_values[9],
+            #                             self.car_density
+            #                             ],
+            #                            [self.simulation_TL_values[10],
+            #                             self.simulation_CAwSD4WI_values[10],
+            #                             self.car_speed
+            #                             ],
+            #                            [self.simulation_TL_values[11],
+            #                             self.simulation_CAwSD4WI_values[11],
+            #                             [self.environment.passed_av_cars,
+            #                              self.environment.passed_hv_cars,
+            #                              self.environment.passed_nl_cars]
+            #                             ],
+            #                            [self.simulation_TL_values[12],
+            #                             self.simulation_CAwSD4WI_values[12],
+            #                             self.safe_distances
+            #                             ],
+            #                            [self.simulation_TL_values[13],
+            #                             self.simulation_CAwSD4WI_values[13],
+            #                             self.reaction_times
+            #                             ],
+            #                            [self.num_of_all_cars, self.num_av,
+            #                             self.num_hv]
+            #                            )
 
         if self.normal_dist is not None and self.file_names[0] is not None and \
                 self.file_names[1] is not None:

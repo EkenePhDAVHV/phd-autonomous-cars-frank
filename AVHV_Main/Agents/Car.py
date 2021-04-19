@@ -132,7 +132,7 @@ class Car(EnvironmentObject):
     def behaviour_update(self, t):
         super(Car, self).behaviour_update(t)
 
-        self.next_node()
+        self.next_node(t)
 
         if len(self.route) > 0:
             self.turning()
@@ -202,10 +202,10 @@ class Car(EnvironmentObject):
         self.previous_node = self.route[0]
         self.route = self.route[1:]
 
-    def next_node(self):
+    def next_node(self, t):
         """Schedules the next node in the route."""
 
-        if len(self.route) > 0:
+        if len(self.route) > 0 or (len(self.route) == 1 and self.position.distance(self.route[0]) > 37.5):
             if isinstance(self.route[0], RoadNode):
 
                 velocity_magnitude = self.velocity.copy().magnitude()
@@ -240,8 +240,13 @@ class Car(EnvironmentObject):
                             self.route[0].position)) == 2:
                     self.reach_node()
         else:
-            self.velocity.reset_self()
-            self.acceleration.reset_self()
+            self.should_accelerate = False
+            self.decelerate(t, braking_force *
+                            3 * self.initial_distance_before_rest / 37.5)
+            if "GentleCar2" in self.name:
+                print(self.velocity.x, self.velocity.y, "---", self.acceleration.x, self.acceleration.y)
+            # self.velocity.reset_self()
+            # self.acceleration.reset_self()
 
     def turning(self):
         if self.route[0] is not None:
@@ -269,7 +274,7 @@ class Car(EnvironmentObject):
         """Moves car while checking for traffic control"""
 
         if len(self.route) == 1:
-            if self.position.distance(self.route[0].position) > 27.5:
+            if self.position.distance(self.route[0].position) > 37.5:
                 pass
             else:
                 self.should_brake_car = False
@@ -285,12 +290,10 @@ class Car(EnvironmentObject):
             # Start car if it is at rest
             if not self.should_brake_car and not self.should_bring_car_to_rest:
                 self.apply_force(t, moving_force, self.is_around_curve)
-            elif self.should_bring_car_to_rest:
-                self.decelerate(t, braking_force *
-                                self.initial_distance_before_rest / 27.5)
             elif self.should_brake_car:
-                self.acceleration.reset_self()
-                self.velocity.reset_self()
+                pass
+                # self.acceleration.reset_self()
+                # self.velocity.reset_self()
 
                 # self.decelerate(t, braking_force)
 

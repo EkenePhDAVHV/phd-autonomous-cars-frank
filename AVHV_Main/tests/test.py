@@ -213,8 +213,11 @@ def run_simulation():
     )
 
     cars = [car for car in simulation.environment.environment_objects[Car]]
-    plot_velocity_graph(cars, file_path=file_path,
-                        current_file_name=current_file_name)
+    try:
+        plot_velocity_graph(cars, file_path=file_path,
+                            current_file_name=current_file_name)
+    except Exception as e:
+        print(e)
 
     del cars
     del simulation

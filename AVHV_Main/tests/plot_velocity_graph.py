@@ -35,7 +35,7 @@ def plot_velocity_graph(cars, file_path, current_file_name):
     except ValueError:
         return
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(40, 20))
     fig, axs = plt.subplots(int(len(cars[:16]) / 4), 4)
 
     # Plot a grid of plots with 4 rows per rows.

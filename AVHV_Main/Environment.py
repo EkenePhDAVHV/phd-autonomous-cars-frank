@@ -271,6 +271,3 @@ class Environment:
                             car.should_accelerate = True
 
             times_to_reserved_nodes = {}
-
-
-

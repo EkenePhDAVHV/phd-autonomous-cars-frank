@@ -19,7 +19,6 @@ from AVHV_Main.Agents.CarSpawner import CarSpawner
 from AVHV_Main.Environment import Environment
 from AVHV_Main.Logger.Tqdm import Tqdm
 from AVHV_Main.StatisticsReporter.PDFDocumenter import PDFDocumenter
-from AVHV_Main.StatisticsReporter.Plotter import Plotter
 from AVHV_Main.StatisticsReporter.StatisticsReporter import StatisticsReporter
 from AVHV_Main.Utilities.Vector2 import Vector2
 
@@ -27,10 +26,10 @@ from AVHV_Main.Utilities.Vector2 import Vector2
 class Simulation:
     def __init__(self, environment, time_end=10, time_increment=0.1,
                  debugging=False, active_routes=[None, None, None, None],
-                 file_path=None, output_path=None, file_names=[None, None],
-                 current_file_name=None, simulation_TL_values=None,
-                 simulation_CAwSD4WI_values=None, file_path_TL=None,
-                 file_path_CAwSD4WI=None):
+                 is_running_ratio=False, _ratio=(None, None), file_path=None,
+                 experiment_results_path=None, current_file_name=None,
+                 simulation_TL_values=None, simulation_CAwSD4WI_values=None,
+                 file_path_TL=None, file_path_CAwSD4WI=None):
 
         # Environment
         self.environment = environment
@@ -41,14 +40,19 @@ class Simulation:
         self.__debug_counter = 0
         self.current_time = 0
         self.__running_time = 0
+        self.completion_time = 0
 
         # Statistics
         self.debugging = debugging
         self.__reporter = None
 
+        self.is_running_ratio = is_running_ratio
+        self._ratio = _ratio
         self.file_path = file_path
-        self.output_path = output_path
-        self.file_names = file_names
+        self.experiment_results_path = experiment_results_path
+        self.experiment_summary_path = self.experiment_results_path + \
+                                       "experiment_summary/" if \
+            self.experiment_results_path is not None else None
         self.current_file_name = current_file_name
         self.file_path_TL = file_path_TL
         self.file_path_CAwSD4WI = file_path_CAwSD4WI
@@ -70,7 +74,8 @@ class Simulation:
             os.path.realpath(__file__)) + "/" + "state.pickle.bak"
 
         if not os.path.exists(os.path.dirname(
-                os.path.realpath(__file__)) + "/" + "state.pickle"):
+                os.path.realpath(__file__)) + "/" + "state.pickle") or \
+                self.is_running_ratio:
 
             self.active_routes = active_routes
 
@@ -147,17 +152,16 @@ class Simulation:
             self.route4_num_cars = sum([cs.total_cars for cs in car_spawners if \
                                         cs.route_list == active_routes[3]])
 
-            self.normal_dist = None
-
             self.throughput_capacity_av = 0
             self.throughput_capacity_hv = 0
 
             self.experiment_values = []
 
-            with open(os.path.dirname(
-                    os.path.realpath(__file__)) + "/" + "state.pickle",
-                      'wb') as g:
-                pickle.dump(self.__dict__, g)
+            if not self.is_running_ratio:
+                with open(os.path.dirname(
+                        os.path.realpath(__file__)) + "/" + "state.pickle",
+                          'wb') as g:
+                    pickle.dump(self.__dict__, g)
         else:
             try:
                 with open(state_file, 'rb') as g:
@@ -242,7 +246,8 @@ class Simulation:
             pdf.ln(1.5 * th)
 
         if self.simulation_TL_values is not None and \
-                self.simulation_CAwSD4WI_values is not None:
+                self.simulation_CAwSD4WI_values is not None and not \
+                self.is_running_ratio:
 
             data = [['', 'w/ Reservation Nodes', 'w/ Traffic Lights',
                      "w/ Safe Distance and 4 Way Intersection"],
@@ -268,14 +273,6 @@ class Simulation:
                         self.hv_average_safe_distance, 2)),
                      str(self.simulation_TL_values[4]),
                      str(self.simulation_CAwSD4WI_values[4])],
-                    # ['Capacity AV - car(s)/min',
-                    #  str(self.throughput_capacity_av),
-                    #  str(self.simulation_TL_values[5]),
-                    #  str(self.simulation_CAwSD4WI_values[5])],
-                    # ['Capacity HV - car(s)/min',
-                    #  str(self.throughput_capacity_hv),
-                    #  str(self.simulation_TL_values[6]),
-                    #  str(self.simulation_CAwSD4WI_values[6])],
                     ['Total Simulation Time (s)',
                      str(round(self.__running_time, 2)),
                      str(self.simulation_TL_values[7]),
@@ -321,42 +318,44 @@ class Simulation:
 
                 pdf.ln(2.5 * th)
 
-        pdf.ln(18)
-        pdf.set_font('Times', '', 10.0)
-        pdf.write(h=th,
-                  txt=f'Open "{self.file_path[1:]}" for distributions and '
-                      f'graphs of Experiment with RN')
-
-        if self.simulation_TL_values is not None:
-            pdf.ln(6)
+            pdf.ln(18)
+            pdf.set_font('Times', '', 10.0)
             pdf.write(h=th,
-                      txt=f'Open "{self.file_path_TL[1:]}" for distributions and '
-                          f'graphs of Experiment with TL')
+                      txt=f'Open "{self.file_path[1:]}" for distributions and '
+                          f'graphs of Experiment with RN')
 
-        if self.simulation_CAwSD4WI_values is not None:
+            if self.simulation_TL_values is not None and not self.is_running_ratio:
+                pdf.ln(6)
+                pdf.write(h=th,
+                          txt=f'Open "{self.file_path_TL[1:]}" for distributions '
+                              f'and graphs of Experiment with TL')
+
+            if self.simulation_CAwSD4WI_values is not None and self.is_running_ratio:
+                pdf.ln(6)
+                pdf.write(h=th,
+                          txt=f'Open "{self.file_path_CAwSD4WI[1:]}" for '
+                              f'distributions and graphs of Experiment with '
+                              f'CAwSD4WI')
+
+            pdf.ln(12)
+            pdf.write(h=th, txt="RN - Reservation Nodes")
             pdf.ln(6)
-            pdf.write(h=th,
-                      txt=f'Open "{self.file_path_CAwSD4WI[1:]}" for distributions '
-                          f'and graphs of Experiment with CAwSD4WI')
+            pdf.write(h=th, txt="TL - Traffic Lights")
+            pdf.ln(6)
+            pdf.write(h=th, txt="CAwSD4WI - Collision Avoidance with Safe "
+                                "Distance and 4 Way Intersection")
 
-        pdf.ln(12)
-        pdf.write(h=th, txt="RN - Reservation Nodes")
-        pdf.ln(6)
-        pdf.write(h=th, txt="TL - Traffic Lights")
-        pdf.ln(6)
-        pdf.write(h=th, txt="CAwSD4WI - Collision Avoidance with Safe "
-                            "Distance and 4 Way Intersection")
+            file_path = "../" + self.file_path.split("/")[1] + "/"
 
-        file_path = "../" + self.file_path.split("/")[1] + "/"
+            pdf.output(f"{self.experiment_summary_path}Experiment_Summary.pdf",
+                       "F")
 
-        pdf.output(f"{file_path}Experiment_Summary.pdf", "F")
-
-        if self.simulation_TL_values is not None and \
-                self.simulation_CAwSD4WI_values is not None:
-            self.draw_metrics_plots()
+            if self.simulation_TL_values is not None and \
+                    self.simulation_CAwSD4WI_values is not None and \
+                    not self.is_running_ratio:
+                self.draw_metrics_plots()
 
     def draw_metrics_plots(self):
-
         file_path = "../" + self.file_path.split("/")[1] + "/"
 
         data = [self.experiment_values,
@@ -365,47 +364,25 @@ class Simulation:
 
         plt.figure(figsize=(10, 10))
         labels = ['RN', 'TL', 'CAwSD4WI']
+        plot_file_names = ['Congestion', 'Occurred Braking',
+                           'Average Safe Distance (AV)',
+                           'Average Safe Distance (HV)',
+                           'Capacity AV - car(s) per min',
+                           'Capacity HV - car(s) per min',
+                           'Total Simulation Time (s)']
 
-        for i in range(8):
-            ax = plt.subplot(3, 3, i + 1)
+        for i in range(7):
             values = [data[0][i], data[1][i], data[2][i]]
-            if i == 0:
-                plt.title('Congestion')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 1:
-                plt.title('Occurred Braking')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 2:
-                plt.title('Braked Cars per Min')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 3:
-                plt.title('Average Safe Distance (AV)')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 4:
-                plt.title('Average Safe Distance (HV)')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 5:
-                plt.title('Capacity AV - car(s) / min')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 6:
-                plt.title('Capacity HV - car(s) / min')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
-            if i == 7:
-                plt.title('Total Simulation Time (s)')
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
+            plt.title(plot_file_names[i])
+            plt.xlabel('Experiment Method')
+            plt.ylabel('Number of Cars')
 
             plt.bar(labels, values)
 
             plt.tight_layout(pad=2)
-            plt.savefig(f"{self.output_path}Experiment_Summary.png")
+            plt.savefig(
+                f"{self.experiment_summary_path}{plot_file_names[i]}.png")
+            plt.close()
 
     def __calculate_blank(self):
         if isinstance(self.environment, Environment):
@@ -646,14 +623,22 @@ class Simulation:
 
         # Drawing prep
         for frame in os.listdir(self.__drawing_directory):
-            os.remove(self.__drawing_directory + frame)
+            try:
+                os.remove(self.__drawing_directory + frame)
+            except PermissionError as e:
+                pass
         self.__draw_current(self.current_time)
 
-        self.current_time = load_checkpoint(self, os.path.dirname(
-            os.path.realpath(__file__)) + "/" + "checkpoint.txt")
+        if not self.is_running_ratio:
+            self.current_time = load_checkpoint(self, os.path.dirname(
+                os.path.realpath(__file__)) + "/" + "checkpoint.txt")
 
-        print("\nAVHV Control with Reservation Nodes - Please wait for a "
-              "while...")
+        if self.is_running_ratio:
+            print("AVHV Control with Reservation Nodes - "
+                  "Please wait for a while...")
+        else:
+            print("\nAVHV Control with Reservation Nodes - "
+                  "Please wait for a while...")
 
         # Progress bar
         progress_bar = Tqdm(self.current_time, total=self.end_time,
@@ -679,12 +664,6 @@ class Simulation:
                     self.environment.passed_nl_cars == self.num_of_all_cars:
                 pass
 
-            self.car_density.append(
-                round(
-                    len(self.environment.environment_objects[Car]) * 2.5 / (
-                        2.4 * 0.6214),
-                    2))
-
             self.traffic_flow.append(
                 round(
                     len(self.environment.environment_objects[
@@ -705,19 +684,41 @@ class Simulation:
                                   Car] if
                               'Aggressive' in car.name]
 
-            self.safe_distances.append(
-                round(sum(safe_distances) / len(safe_distances),
-                      2))
+            try:
+                average_safe_distance = \
+                    round(sum(safe_distances) / len(safe_distances), 2)
 
-            self.reaction_times.append(round(sum(reaction_times) / len(
-                reaction_times), 2))
+                self.safe_distances.append(
+                    round(average_safe_distance))
+            except ZeroDivisionError as e:
+                self.safe_distances.append(0.0)
+                average_safe_distance = 0
 
-            # Increment at the end
+            # Density = (num. of cars * 2.5m + car_safe_distance) / 2400m,
+            # assuming an average length of 2.5m per vehicle.
+            # print(len(self.environment.environment_objects[Car]),
+            #       average_safe_distance,
+            #     round(len(self.environment.environment_objects[Car]) *
+            #           (2.5 + average_safe_distance) / (2400), 2))
 
+            self.car_density.append(
+                round(len(self.environment.environment_objects[Car]) *
+                      (2.5 + average_safe_distance) / (2400), 2))
+
+            try:
+                self.reaction_times.append(round(sum(reaction_times) / len(
+                    reaction_times), 2))
+            except ZeroDivisionError as e:
+                pass
+
+            # Increment running time at the end
             if self.environment.passed_av_cars + \
                     self.environment.passed_hv_cars + \
                     self.environment.passed_nl_cars < self.num_of_all_cars:
                 self.__running_time += self.__time_increment
+
+                # Update the completion time.
+                self.completion_time = self.__running_time
 
                 car_objects = self.environment.environment_objects[Car]
 
@@ -765,64 +766,18 @@ class Simulation:
                 # print([car.safe_distance for car in self.av_list])
             self.current_time += self.__time_increment
 
-            save_checkpoint(self, self.current_time, self.end_time,
-                            os.path.dirname(os.path.realpath(
-                                __file__)) + "/" + "checkpoint.txt",
-                            os.path.dirname(os.path.realpath(
-                                __file__)) + "/" + "state.pickle")
+            if not self.is_running_ratio:
+                save_checkpoint(self, self.current_time, self.end_time,
+                                os.path.dirname(os.path.realpath(
+                                    __file__)) + "/" + "checkpoint.txt",
+                                os.path.dirname(os.path.realpath(
+                                    __file__)) + "/" + "state.pickle")
 
             self.__draw_current(self.current_time)
 
             progress_bar.update(self.__time_increment)
 
         progress_bar.close()
-
-        if self.output_path is not None:
-            # if self.simulation_TL_values is None or \
-            #         self.simulation_CAwSD4WI_values is None:
-            #     self.normal_dist = Plotter(self.output_path, [self.car_density])
-            # else:
-
-            pass
-
-            # self.normal_dist = Plotter(self.output_path,
-            #                            [self.simulation_TL_values[8],
-            #                             self.simulation_CAwSD4WI_values[8],
-            #                             self.traffic_flow],
-            #                            [self.simulation_TL_values[9],
-            #                             self.simulation_CAwSD4WI_values[9],
-            #                             self.car_density
-            #                             ],
-            #                            [self.simulation_TL_values[10],
-            #                             self.simulation_CAwSD4WI_values[10],
-            #                             self.car_speed
-            #                             ],
-            #                            [self.simulation_TL_values[11],
-            #                             self.simulation_CAwSD4WI_values[11],
-            #                             [self.environment.passed_av_cars,
-            #                              self.environment.passed_hv_cars,
-            #                              self.environment.passed_nl_cars]
-            #                             ],
-            #                            [self.simulation_TL_values[12],
-            #                             self.simulation_CAwSD4WI_values[12],
-            #                             self.safe_distances
-            #                             ],
-            #                            [self.simulation_TL_values[13],
-            #                             self.simulation_CAwSD4WI_values[13],
-            #                             self.reaction_times
-            #                             ],
-            #                            [self.num_of_all_cars, self.num_av,
-            #                             self.num_hv]
-            #                            )
-
-        if self.normal_dist is not None and self.file_names[0] is not None and \
-                self.file_names[1] is not None:
-            for file_name in self.file_names:
-                try:
-                    self.normal_dist.read_csv(file_name)
-                except:
-                    pass
-                print(f'Open "{self.output_path}" for distributions and graphs')
 
         try:
             self.av_average_safe_distance = round(
@@ -886,7 +841,7 @@ class Simulation:
                                    self.environment.passed_nl_cars],
                                   self.safe_distances,
                                   self.reaction_times,
-                                  [self.num_av, self.num_hv]
+                                  self.__running_time
                                   ]
 
 

@@ -17,7 +17,6 @@ from AVHV_Main.Logger.Tqdm import Tqdm
 from AVHV_Main.Utilities.checkpoint import load_checkpoint, save_checkpoint
 
 from AVHV_Main.AVHV_CAwSD4WI.Environment import Environment
-from AVHV_Main.StatisticsReporter.Plotter import Plotter
 from AVHV_Main.AVHV_CAwSD4WI.StatisticsReporter import StatisticsReporter
 from AVHV_Main.AVHV_CAwSD4WI.Vector2 import Vector2
 from AVHV_Main.AVHV_CAwSD4WI.Car import Car
@@ -31,8 +30,8 @@ if not os.path.exists("drawings"):
 class Simulation:
     def __init__(self, environment, time_end=10, time_increment=0.1,
                  debugging=False, active_routes=[None, None, None, None],
-                 file_path=None, file_names=[None, None],
-                 current_file_name=None):
+                 is_running_ratio=False, _ratio=(None, None), file_path=None,
+                 file_names=[None, None], current_file_name=None):
 
         # Environment
         self.environment = environment
@@ -43,11 +42,14 @@ class Simulation:
         self.__debug_counter = 0
         self.current_time = 0
         self.__running_time = 0
+        self.completion_time = 0
 
         # Statistics
         self.debugging = debugging
         self.__reporter = None
 
+        self.is_running_ratio = is_running_ratio
+        self._ratio = _ratio
         self.file_path = file_path
         self.file_names = file_names
         self.current_file_name = current_file_name
@@ -69,7 +71,8 @@ class Simulation:
             os.path.realpath(__file__)) + "/" + "state.pickle.bak"
 
         if not os.path.exists(os.path.dirname(
-                os.path.realpath(__file__)) + "/" + "state.pickle"):
+                os.path.realpath(__file__)) + "/" + "state.pickle") or \
+                self.is_running_ratio:
 
             self.active_routes = active_routes
 
@@ -87,8 +90,10 @@ class Simulation:
             self.car_objects = self.environment_objects[Car]
 
             self.av_list = [cs for cs in spawner_objects if 'Gentle' in cs.name]
-            self.hv_list = [cs for cs in spawner_objects if 'Aggressive' in cs.name]
-            self.no_label_list = [cs for cs in spawner_objects if 'Gentle' not in
+            self.hv_list = [cs for cs in spawner_objects if
+                            'Aggressive' in cs.name]
+            self.no_label_list = [cs for cs in spawner_objects if
+                                  'Gentle' not in
                                   cs.name and 'Aggressive' not in cs.name]
 
             self.av_total_safe_distance = 0.0
@@ -137,10 +142,11 @@ class Simulation:
 
             self.normal_dist = None
 
-            with open(os.path.dirname(
-                    os.path.realpath(__file__)) + "/" + "state.pickle",
-                      'wb') as g:
-                pickle.dump(self.__dict__, g)
+            if not self.is_running_ratio:
+                with open(os.path.dirname(
+                        os.path.realpath(__file__)) + "/" + "state.pickle",
+                          'wb') as g:
+                    pickle.dump(self.__dict__, g)
         else:
             try:
                 with open(state_file, 'rb') as g:
@@ -213,11 +219,11 @@ class Simulation:
     def __calculate_layout(self):
         self.__calculate_blank()
 
-        # for layout_type, layout in self.environment.layout.items():
-        #     layout.draw_edges(canvas=self.__scene, offset=self.__min_bound)
-        # for layout_type, layout in self.environment.layout.items():
-        #     layout.draw_nodes(canvas=self.__scene, offset=self.__min_bound)
-        #     layout.draw_text(canvas=self.__scene, offset=self.__min_bound)
+        for layout_type, layout in self.environment.layout.items():
+            layout.draw_edges(canvas=self.__scene, offset=self.__min_bound)
+        for layout_type, layout in self.environment.layout.items():
+            layout.draw_nodes(canvas=self.__scene, offset=self.__min_bound)
+            layout.draw_text(canvas=self.__scene, offset=self.__min_bound)
 
         text = [
             ["Press SPACEBAR to play/pause the simulation and LEFT and RIGHT "
@@ -318,7 +324,7 @@ class Simulation:
                                            ".svg")
 
         # Draw elements and save
-        # self.environment.draw(canvas=self.__frame, offset=self.__min_bound)
+        self.environment.draw(canvas=self.__frame, offset=self.__min_bound)
 
         text = [
             [f"{self.environment.passed_av_cars} / {self.num_av}", (90, 150)],
@@ -364,13 +370,20 @@ class Simulation:
 
         # Drawing prep
         for frame in os.listdir(self.__drawing_directory):
-            os.remove(self.__drawing_directory + frame)
-        # self.__draw_current(self.current_time)
+            try:
+                os.remove(self.__drawing_directory + frame)
+            except PermissionError as e:
+                pass
+        self.__draw_current(self.current_time)
 
-        self.current_time = load_checkpoint(self, os.path.dirname(
-            os.path.realpath(__file__)) + "/" + "checkpoint.txt")
+        if not self.is_running_ratio:
+            self.current_time = load_checkpoint(self, os.path.dirname(
+                os.path.realpath(__file__)) + "/" + "checkpoint.txt")
 
-        print("\nAVHV Control with CAwS4WI - Please wait for a while...")
+        if self.is_running_ratio:
+            print("AVHV Control with CAwS4WI - Please wait for a while...")
+        else:
+            print("\nAVHV Control with CAwS4WI - Please wait for a while...")
 
         # Progress bar
         progress_bar = Tqdm(self.current_time, total=self.end_time,
@@ -397,9 +410,6 @@ class Simulation:
                     self.environment.passed_nl_cars == self.num_of_all_cars:
                 pass
 
-            self.car_density.append(round(len(self.environment.environment_objects[Car]) * 2.5 / (
-                        2.4 * 0.6214), 2))
-
             self.traffic_flow.append(
                 round(
                     len(self.environment.environment_objects[
@@ -408,28 +418,48 @@ class Simulation:
 
             self.car_speed.append(round(
                 sum([car.get_speed() * 2.237 for car in
-                     self.environment.environment_objects[Car]])/
+                     self.environment.environment_objects[Car]]) /
                 len(self.environment.environment_objects[Car]), 2))
 
-            safe_distances = [car.safe_distance for car in self.environment.environment_objects[Car] if 'Aggressive' in car.name]
+            safe_distances = [car.safe_distance for car in
+                              self.environment.environment_objects[Car] if
+                              'Aggressive' in car.name]
 
             reaction_times = [car.reaction_time for car in
-                                  self.environment.environment_objects[
-                                      Car] if
-                                  'Aggressive' in car.name]
+                              self.environment.environment_objects[
+                                  Car] if
+                              'Aggressive' in car.name]
 
-            self.safe_distances.append(round(sum(safe_distances) / len(safe_distances),
-                                             2))
+            try:
+                average_safe_distance = \
+                    round(sum(safe_distances) / len(safe_distances), 2)
 
-            self.reaction_times.append(round(sum(reaction_times) / len(
-                reaction_times), 2))
+                self.safe_distances.append(
+                    round(average_safe_distance))
+            except ZeroDivisionError as e:
+                self.safe_distances.append(0.0)
+                average_safe_distance = 0
 
-            # Increment at the end
+            # Density = (num. of cars * 2.5m + car_safe_distance) / 2400m,
+            # assuming an average length of 2.5m per vehicle.
+            self.car_density.append(
+                round(len(self.environment.environment_objects[Car]) *
+                      (2.5 + average_safe_distance) / (2400), 2))
 
+            try:
+                self.reaction_times.append(round(sum(reaction_times) / len(
+                    reaction_times), 2))
+            except ZeroDivisionError as e:
+                pass
+
+            # Increment running time at the end
             if self.environment.passed_av_cars + \
                     self.environment.passed_hv_cars + \
                     self.environment.passed_nl_cars < self.num_of_all_cars:
                 self.__running_time += self.__time_increment
+
+                # Update the completion time.
+                self.completion_time = self.__running_time
 
                 car_objects = self.environment.environment_objects[Car]
 
@@ -477,26 +507,18 @@ class Simulation:
                 # print([car.safe_distance for car in self.av_list])
             self.current_time += self.__time_increment
 
-            save_checkpoint(self, self.current_time, self.end_time,
-                            os.path.dirname(os.path.realpath(
-                                __file__)) + "/" + "checkpoint.txt",
-                            os.path.dirname(os.path.realpath(
-                                __file__)) + "/" + "state.pickle")
+            if not self.is_running_ratio:
+                save_checkpoint(self, self.current_time, self.end_time,
+                                os.path.dirname(os.path.realpath(
+                                    __file__)) + "/" + "checkpoint.txt",
+                                os.path.dirname(os.path.realpath(
+                                    __file__)) + "/" + "state.pickle")
 
-            # self.__draw_current(self.current_time)
+            self.__draw_current(self.current_time)
 
             progress_bar.update(self.__time_increment)
 
         progress_bar.close()
-
-        if self.normal_dist is not None and self.file_names[0] is not None and \
-                self.file_names[1] is not None:
-            for file_name in self.file_names:
-                self.normal_dist.read_csv(file_name)
-                print(f'Open "{self.file_path}" for distributions and graphs')
-
-                if self.file_names.index(file_name) == 1:
-                    print('\n')
 
         self.av_average_safe_distance = round(
             self.av_averages_safe_distance / (self.__running_time /
@@ -542,7 +564,8 @@ class Simulation:
                                    self.environment.passed_hv_cars,
                                    self.environment.passed_nl_cars],
                                   self.safe_distances,
-                                  self.reaction_times]
+                                  self.reaction_times,
+                                  self.__running_time]
 
 
 if __name__ == '__main__':

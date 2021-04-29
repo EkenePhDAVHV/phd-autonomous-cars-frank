@@ -170,17 +170,15 @@ class Car(EnvironmentObject):
             random_factor = 1.0
 
             if 'Aggressive' in self.name:
-                if self.get_speed() > 0.0:
-                    self.reaction_time = self.safe_distance / self.get_speed()
-                else:
-                    self.reaction_time = 0.3
+                self.reaction_time = round(random.uniform(0.3, 0.75), 2)
 
-                random_factor = random.uniform(1.0, 3.0)
+                random_factor = round(random.uniform(1.0, 3.0), 1)
 
             self.safe_distance = round(self.velocity.magnitude() * \
                                        random_factor * \
                                        self.reaction_time + \
                                        math.sqrt(
+
                                            math.pow(self.velocity.magnitude(),
                                                     2) / \
                                            self.acceleration.magnitude()) +
@@ -205,7 +203,9 @@ class Car(EnvironmentObject):
     def next_node(self, t):
         """Schedules the next node in the route."""
 
-        if len(self.route) > 0 or (len(self.route) == 1 and self.position.distance(self.route[0]) > 37.5):
+        if len(self.route) > 0 or (
+                len(self.route) == 1 and self.position.distance(
+                self.route[0]) > 37.5):
             if isinstance(self.route[0], RoadNode):
 
                 velocity_magnitude = self.velocity.copy().magnitude()
@@ -243,8 +243,8 @@ class Car(EnvironmentObject):
             self.should_accelerate = False
             self.decelerate(t, braking_force *
                             3 * self.initial_distance_before_rest / 37.5)
-            if "GentleCar2" in self.name:
-                print(self.velocity.x, self.velocity.y, "---", self.acceleration.x, self.acceleration.y)
+            # if "GentleCar2" in self.name:
+            #     print(self.velocity.x, self.velocity.y, "---", self.acceleration.x, self.acceleration.y)
             # self.velocity.reset_self()
             # self.acceleration.reset_self()
 
@@ -292,17 +292,13 @@ class Car(EnvironmentObject):
                 self.apply_force(t, moving_force, self.is_around_curve)
             elif self.should_brake_car:
                 pass
-                # self.acceleration.reset_self()
-                # self.velocity.reset_self()
-
-                # self.decelerate(t, braking_force)
 
             if len(self.route) > 1:
                 next_dir = math.degrees(self.route[0].position.direction(
                     self.route[1].position))
 
                 # If the next 2 nodes don't form a straight line
-                if next_dir == -90.0:
+                if next_dir != 0.0 or next_dir != 90.0 or next_dir != -90.0:
                     if self.position.distance(
                             self.route_cache[0].position) < 10.0:
                         self.is_around_curve = True

@@ -198,13 +198,9 @@ class Car(EnvironmentObject):
             random_factor = 1.0
 
             if 'Aggressive' in self.name:
+                self.reaction_time = round(random.uniform(0.3, 0.75), 2)
 
-                if self.get_speed() > 0.0:
-                    self.reaction_time = self.safe_distance / self.get_speed()
-                else:
-                    self.reaction_time = 0.3
-
-                random_factor = random.uniform(1.0, 3.0)
+                random_factor = round(random.uniform(1.0, 3.0), 1)
 
             self.safe_distance = round(self.velocity.magnitude() * \
                                        random_factor * \

@@ -206,6 +206,9 @@ class Car(EnvironmentObject):
 
                 velocity_magnitude = self.velocity.copy().magnitude()
                 accel_magnitude = self.acceleration.copy().magnitude()
+                
+                # if speed AFTER applying the acceleration > max_velocity, you cannot only accelerate so much to reach max speed
+                # Check ./AVHV_CAwSD4WI/_EnvironmentObject.py
 
                 next_dir = self.previous_node.position.direction(
                     self.route[0].position)

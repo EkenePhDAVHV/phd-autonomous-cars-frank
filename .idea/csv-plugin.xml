@@ -3,6 +3,20 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/AVHV_Main/Agents/Car.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/AVHV_Main/Utilities/constants.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/AVHV_Main/experiments/TestVelocity_SafeDistance.py">
           <value>
             <Attribute>
@@ -10,7 +24,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/AVHV_Main/experiments/fix_errors.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/AVHV_Main/experiments/plot_velocity_graph.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/AVHV_Main/experiments/route_chooser.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -25,6 +53,13 @@
           </value>
         </entry>
         <entry key="/AVHV_Main/experiments/run_ratio.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/AVHV_Main/experiments/run_standard.py">
           <value>
             <Attribute>
               <option name="separator" value="," />

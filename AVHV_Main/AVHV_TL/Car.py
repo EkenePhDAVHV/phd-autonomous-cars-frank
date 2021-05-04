@@ -56,8 +56,8 @@ class Car(EnvironmentObject):
         self.reset_acceleration = False
         self.has_decelerated = False
 
-        self.safe_distance = safe_distance if safe_distance is not None else 10
-        self.reaction_time = reaction_time if reaction_time is not None else 0.3
+        self.safe_distance = safe_distance
+        self.reaction_time = reaction_time
 
         self.should_brake_car = False
         self.should_bring_car_to_rest = False
@@ -237,6 +237,7 @@ class Car(EnvironmentObject):
             #                               self.position.draw(offset).y +
             #                               self.position.draw(
             #                                   offset).y + 6) / 3))
+
             canvas.add(car_object)
 
         super().draw_direction(canvas=canvas, offset=offset)
@@ -278,24 +279,24 @@ class Car(EnvironmentObject):
 
         super().physics_update(t)
 
-        if self.acceleration.magnitude() > 0.0:
-            self.reaction_time = 0.1
-            random_factor = 1.0
-
-            if 'Aggressive' in self.name:
-                self.reaction_time = round(random.uniform(0.3, 0.75), 2)
-
-                random_factor = round(random.uniform(1.0, 3.0), 1)
-
-            self.safe_distance = round(self.velocity.magnitude() * \
-                                       random_factor * \
-                                       self.reaction_time + \
-                                       math.sqrt(
-                                           math.pow(self.velocity.magnitude(),
-                                                    2) / \
-                                           self.acceleration.magnitude()) +
-                                       self.reaction_time,
-                                       2)
+        # if self.acceleration.magnitude() > 0.0:
+        #     self.reaction_time = 0.1
+        #     random_factor = 1.0
+        #
+        #     if 'Aggressive' in self.name:
+        #         self.reaction_time = round(random.uniform(0.3, 0.75), 2)
+        #
+        #         random_factor = round(random.uniform(1.0, 3.0), 1)
+        #
+        #     self.safe_distance = round(self.velocity.magnitude() * \
+        #                                random_factor * \
+        #                                self.reaction_time + \
+        #                                math.sqrt(
+        #                                    math.pow(self.velocity.magnitude(),
+        #                                             2) / \
+        #                                    self.acceleration.magnitude()) +
+        #                                self.reaction_time,
+        #                                2)
 
     def reach_node(self):
         self.position = self.route[0].position.copy()

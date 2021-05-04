@@ -279,7 +279,7 @@ def plot_occupancy_matrix(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
 
     ax.set_ylim(ymin=min([min(y_vals[0]),
                           min(y_vals[1]),
-                          min(y_vals[2])]) - 0.1,
+                          min(y_vals[2])]),
                 ymax=max([max(y_vals[0]),
                           max(y_vals[1]),
                           max(y_vals[2])]) + 0.1)

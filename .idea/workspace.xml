@@ -20,16 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4a5ba40-8e3c-4e40-9ad4-347d8bce504f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/DESCRIPTION.rst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/INSTALLER" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/METADATA" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/RECORD" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/REQUESTED" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/WHEEL" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/metadata.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests-0.7.dist-info/top_level.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/lib/python3.8/site-packages/tests/myapp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/csv-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -111,7 +102,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.run">
-    <configuration name="TestVelocity_SafeDistance" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="constants" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="phd-autonomous-cars-frank" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -119,11 +110,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/AVHV_Main/experiments" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/AVHV_Main/Utilities" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/experiments/TestVelocity_SafeDistance.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/Utilities/constants.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -132,7 +123,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_velocity_graph" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="experiments" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="phd-autonomous-cars-frank" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -144,7 +135,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/experiments/plot_velocity_graph.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/experiments/experiments.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="fix_errors" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="phd-autonomous-cars-frank" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/AVHV_Main/experiments" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/experiments/fix_errors.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -174,7 +186,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="run_ratio" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="run_standard" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="phd-autonomous-cars-frank" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -186,7 +198,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/experiments/run_ratio.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AVHV_Main/experiments/run_standard.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -216,35 +228,21 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests in curveforce.py" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <module name="phd-autonomous-cars-frank" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/curveforce.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.test_case_scenario" />
+      <item itemvalue="Python.constants" />
+      <item itemvalue="Python.experiments" />
+      <item itemvalue="Python.run_standard" />
       <item itemvalue="Python.run" />
-      <item itemvalue="Python.run_ratio" />
-      <item itemvalue="Python.plot_velocity_graph" />
-      <item itemvalue="Python tests.Unittests in curveforce.py" />
-      <item itemvalue="Python.TestVelocity_SafeDistance" />
+      <item itemvalue="Python.fix_errors" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.run" />
-        <item itemvalue="Python.TestVelocity_SafeDistance" />
-        <item itemvalue="Python tests.Unittests in curveforce.py" />
-        <item itemvalue="Python.plot_velocity_graph" />
-        <item itemvalue="Python.run_ratio" />
+        <item itemvalue="Python.fix_errors" />
+        <item itemvalue="Python.constants" />
+        <item itemvalue="Python.run_standard" />
+        <item itemvalue="Python.experiments" />
       </list>
     </recent_temporary>
   </component>

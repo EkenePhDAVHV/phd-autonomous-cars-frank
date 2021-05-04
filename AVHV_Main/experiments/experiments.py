@@ -94,8 +94,8 @@ def run_standard_experiments():
 
         car_spawner_objs = [
             CarSpawner_TL(name=item[0], node=starting_node_TL(item[1][0]),
-                          route=item[1], direction=0, car_ratio=item[2],
-                          file_path=file_path_TL,
+                          route=item[1], velocity=10, direction=0,
+                          car_ratio=item[2], file_path=file_path_TL,
                           file_names=["av", "hv"]) for
             item in cars_per_route_standard]
 
@@ -157,7 +157,7 @@ def run_standard_experiments():
             ).add_objects([
                 CarSpawner_CAwSD4WI(name=item[0],
                                     node=starting_node_CAwSD4WI(item[1][0]),
-                                    route=item[1], direction=0,
+                                    route=item[1], velocity=10, direction=0,
                                     car_ratio=item[2],
                                     file_path=file_path_CAwSD4WI,
                                     file_names=["av", "hv"]) for
@@ -194,9 +194,8 @@ def run_standard_experiments():
             layout=layout
         ).add_objects([
             CarSpawner(name=item[0], node=starting_node(item[1][0]),
-                       route=item[1], direction=0, car_ratio=item[2],
-                       file_path=file_path,
-                       file_names=["av", "hv"]) for
+                       route=item[1], velocity=10, direction=0, car_ratio=item[2],
+                       file_path=file_path, file_names=["av", "hv"]) for
             item in cars_per_route_standard]
         ),
         file_path=file_path,
@@ -274,11 +273,11 @@ def run_ratio_experiments():
     AV_ratio = 100
     HV_ratio = 0
 
-    for cars_per_route in cars_per_route_ratio_list[:10]:
+    for cars_per_route in cars_per_route_ratio_list:
         car_spawner_objs = [
             CarSpawner_TL(name=item[0], node=starting_node_TL(item[1][0]),
-                          route=item[1], direction=0, car_ratio=item[2],
-                          file_path=file_path_TL,
+                          route=item[1], velocity=10, direction=0,
+                          car_ratio=item[2], file_path=file_path_TL,
                           file_names=["av", "hv"]) for
             item in cars_per_route]
 
@@ -323,7 +322,7 @@ def run_ratio_experiments():
             ).add_objects([
                 CarSpawner_CAwSD4WI(name=item[0],
                                     node=starting_node_CAwSD4WI(item[1][0]),
-                                    route=item[1], direction=0,
+                                    route=item[1], velocity=10, direction=0,
                                     car_ratio=item[2],
                                     file_path=file_path_CAwSD4WI,
                                     file_names=["av", "hv"]) for
@@ -343,8 +342,8 @@ def run_ratio_experiments():
                 layout=layout
             ).add_objects([
                 CarSpawner(name=item[0], node=starting_node(item[1][0]),
-                           route=item[1], direction=0, car_ratio=item[2],
-                           file_path=file_path,
+                           route=item[1], velocity=10, direction=0,
+                           car_ratio=item[2], file_path=file_path,
                            file_names=["av", "hv"]) for
                 item in cars_per_route]
             ),

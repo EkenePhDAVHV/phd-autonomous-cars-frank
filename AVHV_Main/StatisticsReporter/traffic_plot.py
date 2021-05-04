@@ -1,4 +1,4 @@
-import os
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
@@ -44,8 +44,8 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
             )
 
             cell_text = (("$\\bf{TL}$",
-                          str(round(min(x_vals[0]))),
-                          str(round(max(x_vals[0]))),
+                          str(round(min(x_vals[0]), 2)),
+                          str(round(max(x_vals[0]), 2)),
                           str(round(
                               sum(x_vals[0]) / len(
                                   x_vals[0]),
@@ -55,8 +55,8 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           # + ":" + str(num_of_passed_cars[0][2])
                           ),
                          ("$\\bf{CAwSD4WI}$",
-                          str(round(min(x_vals[1]))),
-                          str(round(max(x_vals[1]))),
+                          str(round(min(x_vals[1]), 2)),
+                          str(round(max(x_vals[1]), 2)),
                           str(round(
                               sum(x_vals[1]) / len(
                                   x_vals[1]),
@@ -66,8 +66,8 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           # + ":" + str(num_of_passed_cars[1][2])
                           ),
                          ("$\\bf{RN}$",
-                          str(round(min(x_vals[1]))),
-                          str(round(max(x_vals[1]))),
+                          str(round(min(x_vals[1]), 2)),
+                          str(round(max(x_vals[1]), 2)),
                           str(round(
                               sum(x_vals[1]) / len(
                                   x_vals[1]),
@@ -88,8 +88,8 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
             )
 
             cell_text = (("$\\bf{TL}$",
-                          str(round(min(y_vals[0]))),
-                          str(round(max(y_vals[0]))),
+                          str(round(min(y_vals[0]), 2)),
+                          str(round(max(y_vals[0]), 2)),
                           str(round(
                               sum(y_vals[0]) / len(
                                   y_vals[0]),
@@ -99,8 +99,8 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           # + ":" + str(num_of_passed_cars[0][2])
                           ),
                          ("$\\bf{CAwSD4WI}$",
-                          str(round(min(y_vals[1]))),
-                          str(round(max(y_vals[1]))),
+                          str(round(min(y_vals[1]), 2)),
+                          str(round(max(y_vals[1]), 2)),
                           str(round(
                               sum(y_vals[1]) / len(
                                   y_vals[1]),
@@ -110,8 +110,8 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           # + ":" + str(num_of_passed_cars[1][2])
                           ),
                          ("$\\bf{RN}$",
-                          str(round(min(y_vals[2]))),
-                          str(round(max(y_vals[2]))),
+                          str(round(min(y_vals[2]), 2)),
+                          str(round(max(y_vals[2]), 2)),
                           str(round(
                               sum(y_vals[2]) / len(
                                   y_vals[2]),
@@ -135,14 +135,14 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
             )
 
             cell_text = (("$\\bf{TL}$",
-                          str(round(min(x_vals[0]))),
-                          str(round(max(x_vals[0]))),
+                          str(round(min(x_vals[0]), 2)),
+                          str(round(max(x_vals[0]), 2)),
                           str(round(
                               sum(x_vals[0]) / len(
                                   x_vals[0]),
                               2)),
-                          str(round(min(y_vals[0]))),
-                          str(round(max(y_vals[0]))),
+                          str(round(min(y_vals[0]), 2)),
+                          str(round(max(y_vals[0]), 2)),
                           str(round(
                               sum(y_vals[0]) / len(
                                   y_vals[0]),
@@ -152,14 +152,14 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           # + ":" + str(num_of_passed_cars[0][2])
                           ),
                          ("$\\bf{CAwSD4WI}$",
-                          str(round(min(x_vals[1]))),
-                          str(round(max(x_vals[1]))),
+                          str(round(min(x_vals[1]), 2)),
+                          str(round(max(x_vals[1]), 2)),
                           str(round(
                               sum(x_vals[1]) / len(
                                   x_vals[1]),
                               2)),
-                          str(round(min(y_vals[1]))),
-                          str(round(max(y_vals[1]))),
+                          str(round(min(y_vals[1]), 2)),
+                          str(round(max(y_vals[1]), 2)),
                           str(round(
                               sum(y_vals[1]) / len(
                                   y_vals[1]),
@@ -169,14 +169,14 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           # + ":" + str(num_of_passed_cars[1][2])
                           ),
                          ("$\\bf{RN}$",
-                          str(round(min(x_vals[1]))),
-                          str(round(max(x_vals[1]))),
+                          str(round(min(x_vals[1]), 2)),
+                          str(round(max(x_vals[1]), 2)),
                           str(round(
                               sum(x_vals[1]) / len(
                                   x_vals[1]),
                               2)),
-                          str(round(min(y_vals[2]))),
-                          str(round(max(y_vals[2]))),
+                          str(round(min(y_vals[2]), 2)),
+                          str(round(max(y_vals[2]), 2)),
                           str(round(
                               sum(y_vals[2]) / len(
                                   y_vals[2]),
@@ -227,6 +227,11 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                      "road is 2400m",
                      fontsize=24)
 
+        if x_column_title == "Speed" or y_column_title == "Speed":
+            fig.text(0.682, .15,
+                     "Note that speed is in " + "$\\bf{miles}$" + "$\\bf{/}$" +
+                     "$\\bf{hr.}$", fontsize=24)
+
         # the_table.set_fontsize(30)
 
     except Exception as e:
@@ -239,22 +244,18 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                'Reservation Nodes'),
               fontsize=24)
 
+    min_y = min([min(y_vals[0]), min(y_vals[1]), min(y_vals[2])])
+
     if y_column_title == "Density":
         max_y = 100.0
     else:
         max_y = max([max(y_vals[0]), max(y_vals[1]), max(y_vals[2])])
 
-    ax.set_ylim(ymin=min([min(y_vals[0]),
-                          min(y_vals[1]),
-                          min(y_vals[2])]) - 0.1,
-                ymax= max_y + 0.1)
+    min_x = min([min(x_vals[0]), min(x_vals[1]), min(x_vals[2])])
+    max_x = max([max(x_vals[0]), max(x_vals[1]), max(x_vals[2])])
 
-    ax.set_xlim(xmin=min([min(x_vals[0]),
-                          min(x_vals[1]),
-                          min(x_vals[2])]),
-                xmax=max([max(x_vals[0]),
-                          max(x_vals[1]),
-                          max(x_vals[2])]) + 1)
+    ax.set_ylim(ymin=min_y, ymax=max_y + 0.1)
+    ax.set_xlim(xmin=min_x, xmax=max_x + 1.0)
 
     plt.xlabel(x_label, fontsize=26, labelpad=40,
                fontweight='bold')

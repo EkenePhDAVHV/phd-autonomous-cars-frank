@@ -126,15 +126,15 @@ class StandardPlotter:
                      'Safe Distance over Time',
                      'Time (secs)',
                      'Safe Distance (m)',
-                     all_fp, 'safe_distance', 'Safe Dist.',
-                     x_val_only_in_table=True)
+                     all_fp, 'safe_distance', y_column_title='Safe Dist.',
+                     y_val_only_in_table=True)
 
         plot_traffic(self, self.time_graduation, self.reaction_times,
                      'Reaction Time over Time',
                      'Time (secs)',
                      'Reaction Time (secs)',
-                     all_fp, 'reaction_time', 'React. Time',
-                     x_val_only_in_table=True)
+                     all_fp, 'reaction_time', y_column_title='React. Time',
+                     y_val_only_in_table=True)
 
     def plot(self):
         try:

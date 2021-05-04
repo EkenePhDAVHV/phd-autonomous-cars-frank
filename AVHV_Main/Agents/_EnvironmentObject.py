@@ -19,6 +19,8 @@ class EnvironmentObject:
             name = str(name)
         if not isinstance(direction, int) and not isinstance(direction, float):
             self.direction = 0
+        else:
+            self.direction = direction
         if not isinstance(mass, int) and not isinstance(mass, float):
             mass = 1200
         if not isinstance(color, str):
@@ -27,7 +29,14 @@ class EnvironmentObject:
         # Set Values
         self.name = name
         self.position = Vector2(position)
-        self.velocity = Vector2(velocity)
+
+        # Don't start from zero velocity.
+        if "car" in self.name.lower() and "spawner" not in self.name.lower():
+            self.velocity = Vector2(0)
+            self.velocity.x = max_velocity * math.cos(self.direction)
+            self.velocity.y = max_velocity * math.sin(self.direction)
+        else:
+            self.velocity = Vector2(velocity)
 
         if acceleration is not None:
             if isinstance(acceleration, int):
@@ -99,7 +108,11 @@ class EnvironmentObject:
             pass
         else:
             if self.should_accelerate:
-                self.velocity.add_self(self.acceleration.copy().scale(t))
+                if self.velocity.add_self(self.acceleration.copy().scale(
+                        t)).magnitude() >= max_velocity - 0.1:
+                    pass
+                else:
+                    self.velocity.add_self(self.acceleration.copy().scale(t))
 
         if not self.checked_polarity_x:
             if self.velocity.x < 0.0:
@@ -133,7 +146,7 @@ class EnvironmentObject:
         #     if self.velocity.x > 0.0:
         #         self.velocity.x -= self.acceleration.x * t
 
-        self.velocity.add_self(self.acceleration.copy().scale(t))
+        # self.velocity.add_self(self.acceleration.copy().scale(t))
 
         if self.checked_polarity_x:
             if self.velocity.x < 0.0 and self.polarity_x == "+":

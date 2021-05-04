@@ -36,7 +36,7 @@ class CarSpawner(EnvironmentObject):
             self.safe_distance = 20
             self.reaction_time = 0.3
         else:
-            self.safe_distance = 20
+            self.safe_distance = 15
             self.reaction_time = random.uniform(0.1, 0.3)
 
         if self.capacity_type == "full":
@@ -125,7 +125,7 @@ class CarSpawner(EnvironmentObject):
                         break
 
         self.cars.append(Car(
-            name=self.name + str(len([car for car in
+            name=self.name[:-7] + str(len([car for car in
                                       self.environment.environment_objects[
                                           Car] if self.name in car.name]) + 1),
             position=self.node.position,

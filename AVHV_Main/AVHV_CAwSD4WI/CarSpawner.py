@@ -1,14 +1,11 @@
-from copy import copy
-
-from random import randint
 import random
+from random import randint
 
-import numpy as np
+from copy import copy
 
 import AVHV_Main.AVHV_CAwSD4WI.Car
 from AVHV_Main.AVHV_CAwSD4WI.RoadNode import RoadNode
 from AVHV_Main.AVHV_CAwSD4WI._EnvironmentObject import EnvironmentObject
-from AVHV_Main.AVHV_CAwSD4WI.constants import *
 
 
 class CarSpawner(EnvironmentObject):
@@ -36,10 +33,10 @@ class CarSpawner(EnvironmentObject):
                          direction=direction, car_ratio=car_ratio)
 
         if 'Aggressive' in name:
-            self.safe_distance = 25
+            self.safe_distance = 20
             self.reaction_time = 0.3
         else:
-            self.safe_distance = 20
+            self.safe_distance = 15
             self.reaction_time = random.uniform(0.1, 0.3)
 
         if self.capacity_type == "full":
@@ -128,11 +125,12 @@ class CarSpawner(EnvironmentObject):
                         break
 
         self.cars.append(AVHV_Main.AVHV_CAwSD4WI.Car.Car(
-            name=self.name + str(len([car for car in
+            name=self.name[:-7] + str(len([car for car in
                                       self.environment.environment_objects[
                                           AVHV_Main.AVHV_CAwSD4WI.Car.Car
                                       ] if self.name in car.name]) + 1),
             position=self.node.position,
+            direction=self.direction,
             route=route,
             route_list=self.route_list,
             safe_distance=self.safe_distance,

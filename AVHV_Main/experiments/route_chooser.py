@@ -19,7 +19,7 @@ def choose_standard_experiments_routes():
     # routes for the car spawners.
 
     total_num = total_num_of_cars
-    types_of_spawners = ['GentleCar', 'AggressiveCar']
+    types_of_spawners = ['GentleCarSpawner', 'AggressiveCarSpawner']
     cars_per_route = []
 
     while total_num > 0:

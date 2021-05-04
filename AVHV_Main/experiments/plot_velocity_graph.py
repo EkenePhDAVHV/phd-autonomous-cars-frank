@@ -136,6 +136,43 @@ def plot_velocity_graph(cars, file_path):
             for j in range(1, len(cell_text) + 1):
                 cellDict[(j, i)].set_height(.05)
 
+        fig.text(0.682, .198,
+                 "Note that speed is in " + "$\\bf{miles}$" + "$\\bf{/}$" +
+                 "$\\bf{hr.}$", fontsize=24)
+
+        min_y = min([min(s_[0][0]),
+                     min(s_[0][1]),
+                     min(s_[0][2]),
+                     min(s_[0][3]),
+                     min(s_[1][0])])
+
+        max_y = max([max(s_[0][0]),
+                     max(s_[0][1]),
+                     max(s_[0][2]),
+                     max(s_[0][3]),
+                     max(s_[1][0])])
+
+        min_x = min([min(t_[0][0]),
+                     min(t_[0][1]),
+                     min(t_[0][2]),
+                     min(t_[0][3]),
+                     min(t_[1][0])])
+
+        max_x = max([max(t_[0][0]),
+                     max(t_[0][1]),
+                     max(t_[0][2]),
+                     max(t_[0][3]),
+                     max(t_[1][0])])
+
+        ax.set_ylim(ymin=min_y,
+                    ymax=max_y + 1.0)
+
+        ax.set_xlim(xmin=min_x,
+                    xmax=max_x + 1.0)
+
+        plt.xticks(np.arange(min_x, max_x + 1.0, 1.0))
+        plt.yticks(np.arange(min_y, max_y + 1.0, 1.0))
+
         plt.xlabel("Time (secs)", fontsize=26, labelpad=40,
                    fontweight='bold')
         plt.ylabel("Speed (miles / hr)", fontsize=26, labelpad=40,

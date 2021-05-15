@@ -1,4 +1,9 @@
-from AVHV_Main.experiments.experiments import run_ratio_experiments
+from AVHV_Main.experiments.experiments import run_standard_experiments, \
+    run_ratio_experiments
 
-# Runs only ratio experiments.
+# Runs both standard and ratio experiments.
+# 50% capacity
+run_ratio_experiments(capacity=50)
+
+# 100% capacity
 run_ratio_experiments()

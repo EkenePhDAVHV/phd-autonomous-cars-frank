@@ -10,7 +10,7 @@ from AVHV_Main.AVHV_CAwSD4WI._EnvironmentObject import EnvironmentObject
 
 class CarSpawner(EnvironmentObject):
     def __init__(self, name, node, direction, route=None, velocity=None,
-                 car_ratio=None, capacity_type="full", file_path=None,
+                 car_ratio=None, capacity=None, file_path=None,
                  file_names=None):
 
         self.node = copy(node)
@@ -26,28 +26,31 @@ class CarSpawner(EnvironmentObject):
         self.file_path = file_path
         self.file_names = file_names
 
-        self.capacity_type = capacity_type.lower()
+        self.capacity = capacity
         self.finished_spawning = False
 
         super().__init__(name=name, position=self.node.position,
                          direction=direction, car_ratio=car_ratio)
 
         if 'Aggressive' in name:
-            self.safe_distance = 20
-            self.reaction_time = 0.3
+            self.safe_distance = round(random.uniform(20, 25), 4)
+            self.reaction_time = round(random.uniform(0.3, 1.0), 4)
         else:
-            self.safe_distance = 15
-            self.reaction_time = random.uniform(0.1, 0.3)
+            self.safe_distance = round(random.uniform(15, 20), 4)
+            self.reaction_time = round(random.uniform(0.1, 0.3), 4)
 
-        if self.capacity_type == "full":
+        if self.capacity == 50:
+            # Half traffic
+            if 'Aggressive' in name:
+                self.spawning_distance = randint(40, 50)
+            else:
+                self.spawning_distance = randint(30, 40)
+        else:
             # Full traffic
             if 'Aggressive' in name:
                 self.spawning_distance = randint(20, 25)
             else:
                 self.spawning_distance = randint(15, 20)
-            # Half traffic
-        else:
-            self.spawning_distance = self.safe_distance + randint(5, 10)
 
     def begin_behaviour_update(self, t):
         super().behaviour_update(t)

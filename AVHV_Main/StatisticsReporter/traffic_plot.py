@@ -251,6 +251,12 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
     else:
         max_y = max([max(y_vals[0]), max(y_vals[1]), max(y_vals[2])])
 
+    if y_column_title == "Safe Dist.":
+        min_y = min([min(y_vals[0]), min(y_vals[1]), min(y_vals[2])]) - 2.0
+
+    if y_column_title == "React. Time":
+        min_y = min([min(y_vals[0]), min(y_vals[1]), min(y_vals[2])]) - 0.1
+
     min_x = min([min(x_vals[0]), min(x_vals[1]), min(x_vals[2])])
     max_x = max([max(x_vals[0]), max(x_vals[1]), max(x_vals[2])])
 

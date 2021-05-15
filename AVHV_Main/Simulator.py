@@ -27,9 +27,10 @@ class Simulation:
     def __init__(self, environment, time_end=10, time_increment=0.1,
                  debugging=False, active_routes=[None, None, None, None],
                  is_running_ratio=False, _ratio=(None, None), file_path=None,
-                 experiment_results_path=None, current_file_name=None,
-                 simulation_TL_values=None, simulation_CAwSD4WI_values=None,
-                 file_path_TL=None, file_path_CAwSD4WI=None):
+                 experiment_results_path=None, experiment_summary_path=None,
+                 current_file_name=None, simulation_TL_values=None,
+                 simulation_CAwSD4WI_values=None, file_path_TL=None,
+                 file_path_CAwSD4WI=None):
 
         # Environment
         self.environment = environment
@@ -50,9 +51,7 @@ class Simulation:
         self._ratio = _ratio
         self.file_path = file_path
         self.experiment_results_path = experiment_results_path
-        self.experiment_summary_path = self.experiment_results_path + \
-                                       "experiment_summary/" if \
-            self.experiment_results_path is not None else None
+        self.experiment_summary_path = experiment_results_path
         self.current_file_name = current_file_name
         self.file_path_TL = file_path_TL
         self.file_path_CAwSD4WI = file_path_CAwSD4WI

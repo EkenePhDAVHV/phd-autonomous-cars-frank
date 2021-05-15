@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/AVHV_Main/Agents/CarSpawner.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/AVHV_Main/Utilities/constants.py">
           <value>
             <Attribute>

@@ -43,19 +43,35 @@ cars_per_route_ratio_list = choose_ratioed_experiments_routes()
 
 output_path = "../output/"
 experiment_results_path = "../output/experiment_results/"
-experiment_summary_path = "../output/experiment_results/experiment_summary/"
-file_path = "../output/experiment_results/AVHV_Reservation_Nodes/"
-file_path_TL = "../output/experiment_results/AVHV_Traffic_Lights/"
-file_path_CAwSD4WI = "../output/experiment_results/AVHV_CAwSD4WI/"
+
+experiment_results_path_50 = "../output/experiment_results/50_percent_capacity/"
+experiment_results_path_100 = \
+    "../output/experiment_results/100_percent_capacity/"
+
+experiment_summary_path_50 = experiment_results_path_50 + "experiment_summary/"
+experiment_summary_path_100 = experiment_results_path_100 + \
+                              "experiment_summary/"
+
+file_path_50 = experiment_results_path_50 + "AVHV_Reservation_Nodes/"
+file_path_100 = experiment_results_path_100 + "AVHV_Reservation_Nodes/"
+
+file_path_TL_50 = experiment_results_path_50 + "AVHV_Traffic_Lights/"
+file_path_TL_100 = experiment_results_path_100 + "AVHV_Traffic_Lights/"
+
+file_path_CAwSD4WI_50 = experiment_results_path_50 + "AVHV_CAwSD4WI/"
+file_path_CAwSD4WI_100 = experiment_results_path_100 + "AVHV_CAwSD4WI/"
 
 file_names = ["av", "hv"]
 
 for _file_path in [output_path, experiment_results_path,
-                   experiment_summary_path]:
+                   experiment_results_path_50, experiment_results_path_100,
+                   experiment_summary_path_50, experiment_summary_path_100]:
     if not os.path.isdir(_file_path):
         os.mkdir(_file_path)
 
-for _file_path in [file_path, file_path_TL, file_path_CAwSD4WI]:
+for _file_path in [file_path_50, file_path_100, file_path_TL_50,
+                   file_path_TL_100, file_path_CAwSD4WI_50,
+                   file_path_CAwSD4WI_100]:
     if not os.path.isdir(_file_path):
         os.mkdir(_file_path)
 
@@ -89,14 +105,27 @@ def starting_node(node):
 
 
 # Run the standard experiments.
-def run_standard_experiments():
+def run_standard_experiments(capacity=100):
+    if capacity == 50:
+        file_path_TL = file_path_TL_50
+        file_path_CAwSD4WI = file_path_CAwSD4WI_50
+        file_path = file_path_50
+        experiment_results_path = experiment_results_path_50
+        experiment_summary_path = experiment_summary_path_50
+    else:
+        file_path_TL = file_path_TL_100
+        file_path_CAwSD4WI = file_path_CAwSD4WI_100
+        file_path = file_path_100
+        experiment_results_path = experiment_results_path_100
+        experiment_summary_path = experiment_summary_path_100
+
     if not os.path.exists(state_files[0]):
 
         car_spawner_objs = [
             CarSpawner_TL(name=item[0], node=starting_node_TL(item[1][0]),
                           route=item[1], velocity=10, direction=0,
-                          car_ratio=item[2], file_path=file_path_TL,
-                          file_names=["av", "hv"]) for
+                          car_ratio=item[2], capacity=capacity,
+                          file_path=file_path_TL, file_names=["av", "hv"]) for
             item in cars_per_route_standard]
 
         environment_TL = Environment_TL(
@@ -158,7 +187,7 @@ def run_standard_experiments():
                 CarSpawner_CAwSD4WI(name=item[0],
                                     node=starting_node_CAwSD4WI(item[1][0]),
                                     route=item[1], velocity=10, direction=0,
-                                    car_ratio=item[2],
+                                    car_ratio=item[2], capacity=capacity,
                                     file_path=file_path_CAwSD4WI,
                                     file_names=["av", "hv"]) for
                 item in cars_per_route_standard]
@@ -194,12 +223,14 @@ def run_standard_experiments():
             layout=layout
         ).add_objects([
             CarSpawner(name=item[0], node=starting_node(item[1][0]),
-                       route=item[1], velocity=10, direction=0, car_ratio=item[2],
+                       route=item[1], velocity=10, direction=0,
+                       car_ratio=item[2], capacity=capacity,
                        file_path=file_path, file_names=["av", "hv"]) for
             item in cars_per_route_standard]
         ),
         file_path=file_path,
         experiment_results_path=experiment_results_path,
+        experiment_summary_path=experiment_summary_path,
         active_routes=routes,
         simulation_TL_values=simulation_TL_experiment_values,
         simulation_CAwSD4WI_values=simulation_CAwSD4WI_experiment_values,
@@ -263,7 +294,20 @@ def run_standard_experiments():
 
 
 # Run the standard experiments with ratios.
-def run_ratio_experiments():
+def run_ratio_experiments(capacity=100):
+    if capacity == 50:
+        file_path_TL = file_path_TL_50
+        file_path_CAwSD4WI = file_path_CAwSD4WI_50
+        file_path = file_path_50
+        experiment_results_path = experiment_results_path_50
+        experiment_summary_path = experiment_summary_path_50
+    else:
+        file_path_TL = file_path_TL_100
+        file_path_CAwSD4WI = file_path_CAwSD4WI_100
+        file_path = file_path_100
+        experiment_results_path = experiment_results_path_100
+        experiment_summary_path = experiment_summary_path_100
+
     with open(experiment_results_path + "occupancy_matrix_results.csv", "w",
               encoding="utf8") as h:
         h.write("s_no, AV_Ratio, HV_Ratio, TL_Occupancy_Time_secs, "
@@ -277,8 +321,8 @@ def run_ratio_experiments():
         car_spawner_objs = [
             CarSpawner_TL(name=item[0], node=starting_node_TL(item[1][0]),
                           route=item[1], velocity=10, direction=0,
-                          car_ratio=item[2], file_path=file_path_TL,
-                          file_names=["av", "hv"]) for
+                          car_ratio=item[2], capacity=capacity,
+                          file_path=file_path_TL, file_names=["av", "hv"]) for
             item in cars_per_route]
 
         environment_TL = Environment_TL(
@@ -323,7 +367,7 @@ def run_ratio_experiments():
                 CarSpawner_CAwSD4WI(name=item[0],
                                     node=starting_node_CAwSD4WI(item[1][0]),
                                     route=item[1], velocity=10, direction=0,
-                                    car_ratio=item[2],
+                                    car_ratio=item[2], capacity=capacity,
                                     file_path=file_path_CAwSD4WI,
                                     file_names=["av", "hv"]) for
                 item in cars_per_route]
@@ -343,8 +387,8 @@ def run_ratio_experiments():
             ).add_objects([
                 CarSpawner(name=item[0], node=starting_node(item[1][0]),
                            route=item[1], velocity=10, direction=0,
-                           car_ratio=item[2], file_path=file_path,
-                           file_names=["av", "hv"]) for
+                           car_ratio=item[2], capacity=capacity,
+                           file_path=file_path, file_names=["av", "hv"]) for
                 item in cars_per_route]
             ),
             active_routes=routes,

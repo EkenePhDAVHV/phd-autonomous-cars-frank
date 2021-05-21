@@ -18,7 +18,7 @@ car_mass = 1200
 moving_force = 1200
 braking_force = 1200
 
-simulation_time = 20.0
+simulation_time = 90.0
 sim_time_increment = 0.1
 
 ratio_simulation_time = 20.0

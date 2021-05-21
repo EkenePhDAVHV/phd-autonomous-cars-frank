@@ -51,7 +51,7 @@ class Simulation:
         self._ratio = _ratio
         self.file_path = file_path
         self.experiment_results_path = experiment_results_path
-        self.experiment_summary_path = experiment_results_path
+        self.experiment_summary_path = experiment_summary_path
         self.current_file_name = current_file_name
         self.file_path_TL = file_path_TL
         self.file_path_CAwSD4WI = file_path_CAwSD4WI
@@ -210,9 +210,13 @@ class Simulation:
             [f"No Label: {self.num_no_label}", f"{self.active_routes[2]} - "
                                                f"{self.route3_num_cars} cars"],
             ["", f"{self.active_routes[3]} - {self.route1_num_cars} cars"],
+            [" ", " "],
             [f"AV Car Spawner: {len(self.av_list)}", ],
             [f"HV Car Spawner: {len(self.hv_list)}"],
             [f"No Label: {len(self.no_label_list)}"],
+            [" ", " "],
+            [
+                f"Cars Simulated: {self.num_av + self.num_hv + self.num_no_label}"],
         ]
 
         # Text height is the same as current font size
@@ -258,7 +262,7 @@ class Simulation:
                      str(self.environment.occurred_collisions),
                      str(self.simulation_TL_values[1]),
                      str(self.simulation_CAwSD4WI_values[1])],
-                    ['Avg. Braked Cars per min',
+                    ['Braking per 1000 cars per min',
                      str(round(self.total_braked_cars * 60 /
                                (self.__running_time / self.__time_increment),
                                2)),
@@ -268,14 +272,24 @@ class Simulation:
                      str(round(self.av_average_safe_distance, 2)),
                      str(self.simulation_TL_values[3]),
                      str(self.simulation_CAwSD4WI_values[3])],
-                    ['Avg. Safe Distance (HV)', str(round(
-                        self.hv_average_safe_distance, 2)),
+                    ['Avg. Safe Distance (HV)',
+                     str(round(self.hv_average_safe_distance, 2)),
                      str(self.simulation_TL_values[4]),
                      str(self.simulation_CAwSD4WI_values[4])],
                     ['Total Simulation Time (s)',
                      str(round(self.__running_time, 2)),
                      str(self.simulation_TL_values[7]),
-                     str(self.simulation_CAwSD4WI_values[7])]
+                     str(self.simulation_CAwSD4WI_values[7])],
+                    ['Reached Destination',
+                     str(self.environment.passed_av_cars +
+                         self.environment.passed_hv_cars +
+                         self.environment.passed_nl_cars),
+                     str(self.simulation_TL_values[11][0] +
+                         self.simulation_TL_values[11][1] +
+                         self.simulation_TL_values[11][2]),
+                     str(self.simulation_CAwSD4WI_values[11][0] +
+                         self.simulation_CAwSD4WI_values[11][1] +
+                         self.simulation_CAwSD4WI_values[11][2])]
                     ]
 
             pdf.ln(12)
@@ -363,7 +377,7 @@ class Simulation:
 
         plt.figure(figsize=(10, 10))
         labels = ['RN', 'TL', 'CAwSD4WI']
-        plot_file_names = ['Congestion', 'Occurred Braking',
+        plot_file_names = ['Capacity', 'Occurred Braking',
                            'Average Safe Distance (AV)',
                            'Average Safe Distance (HV)',
                            'Capacity AV - car(s) per min',
@@ -373,10 +387,15 @@ class Simulation:
         for i in range(7):
             values = [data[0][i], data[1][i], data[2][i]]
             plt.title(plot_file_names[i])
-            plt.xlabel('Experiment Method')
-            plt.ylabel('Number of Cars')
 
-            plt.bar(labels, values)
+            if i == 2 or i == 3:
+                plt.barh(labels, values)
+                plt.xlabel('Number of Cars')
+                plt.ylabel('Experiment Method')
+            else:
+                plt.bar(labels, values)
+                plt.xlabel('Experiment Method')
+                plt.ylabel('Number of Cars')
 
             plt.tight_layout(pad=2)
             plt.savefig(
@@ -693,16 +712,16 @@ class Simulation:
                 self.safe_distances.append(0.0)
                 average_safe_distance = 0
 
-            # Density = (num. of cars * 2.5m + car_safe_distance) / 2400m,
-            # assuming an average length of 2.5m per vehicle.
-            # print(len(self.environment.environment_objects[Car]),
-            #       average_safe_distance,
-            #     round(len(self.environment.environment_objects[Car]) *
-            #           (2.5 + average_safe_distance) / (2400), 2))
+            # Density (%) = (num. of cars * (2.5m + car_safe_distance) -
+            # average_distance) * 100 / 2400m, assuming an average length of
+            # 2.5m per vehicle.
 
+            # Subtract one of the safe_distances because the first car has no
+            # safe distance to keep.
             self.car_density.append(
-                round(len(self.environment.environment_objects[Car]) *
-                      (2.5 + average_safe_distance) / (2400), 2))
+                round((len(self.environment.environment_objects[Car]) *
+                       (2.5 + average_safe_distance) - average_safe_distance) *
+                      100 / 2400, 2))
 
             try:
                 self.reaction_times.append(round(sum(reaction_times) / len(
@@ -739,7 +758,13 @@ class Simulation:
                                                          car in
                                                          no_label_objects])
 
-                self.total_braked_cars += len(self.environment.cars_braked)
+                try:
+                    self.total_braked_cars += len(
+                        self.environment.cars_braked) * \
+                                              1000 / len(
+                        self.environment.environment_objects[Car])
+                except ZeroDivisionError:
+                    self.total_braked_cars += 0
 
                 try:
                     self.av_averages_safe_distance += \
@@ -787,8 +812,8 @@ class Simulation:
 
         try:
             self.hv_average_safe_distance = round(
-                self.hv_average_safe_distance / (self.__running_time / \
-                                                 self.__time_increment))
+                self.hv_averages_safe_distance / (self.__running_time / \
+                                                  self.__time_increment))
         except ZeroDivisionError:
             self.hv_average_safe_distance = 0.0
 

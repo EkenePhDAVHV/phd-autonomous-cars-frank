@@ -28,6 +28,7 @@ class Environment:
             # Animate Objects
             Car: []
         }
+
         self.road_system = layout.get(RoadSystem)
         self.pedestrian_system = layout.get(PedestrianSystem)
 

@@ -1,33 +1,32 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from matplotlib.ticker import FormatStrFormatter
 
 
 def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                  file_title, x_column_title='', y_column_title='',
                  x_val_only_in_table=False, y_val_only_in_table=False):
     fig, ax = plt.subplots()
-    fig.set_size_inches(40, 20)
-
-    # plt.subplots_adjust(left=0.2, top=0.8)
+    fig.set_size_inches(40, 25)
 
     ax.set_facecolor("#EAEAF2")
 
     try:
         ax.set_title(
             title + ' - ' + obj.simulation_time_label,
-            fontsize=38, pad=50, fontweight='bold')
+            fontsize=50, pad=50, fontweight='bold')
 
         # subset the first list in case the time list is longer.
         p1 = ax.plot(x_vals[0][:len(y_vals[0])], y_vals[0],
-                     color='red',
-                     marker='o', markersize=10)
+                     color='red', linewidth=4.0,
+                     marker='o', markersize=16)
         p2 = ax.plot(x_vals[1][:len(y_vals[1])], y_vals[1],
-                     color='blue',
-                     marker='o', markersize=10)
+                     color='blue', linewidth=4.0,
+                     marker='o', markersize=16)
         p3 = ax.plot(x_vals[2][:len(y_vals[2])], y_vals[2],
-                     color='green',
-                     marker='o', markersize=10)
+                     color='green', linewidth=4.0,
+                     marker='o', markersize=16)
         plt.margins(x=0.0, y=0.0, tight=False)
 
         plt.grid(color="#FFFFFF")
@@ -49,9 +48,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(x_vals[0]) / len(
                                   x_vals[0]),
-                              2)),
-                          str(obj.num_of_passed_cars[0][0]) + ":" +
-                          str(obj.num_of_passed_cars[0][1])
+                              2))
+                          # str(obj.num_of_passed_cars[0][0]) + ":" +
+                          # str(obj.num_of_passed_cars[0][1])
                           # + ":" + str(num_of_passed_cars[0][2])
                           ),
                          ("$\\bf{CAwSD4WI}$",
@@ -60,9 +59,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(x_vals[1]) / len(
                                   x_vals[1]),
-                              2)),
-                          str(obj.num_of_passed_cars[1][0]) + ":" +
-                          str(obj.num_of_passed_cars[1][1])
+                              2))
+                          # str(obj.num_of_passed_cars[1][0]) + ":" +
+                          # str(obj.num_of_passed_cars[1][1])
                           # + ":" + str(num_of_passed_cars[1][2])
                           ),
                          ("$\\bf{RN}$",
@@ -71,9 +70,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(x_vals[1]) / len(
                                   x_vals[1]),
-                              2)),
-                          str(obj.num_of_passed_cars[2][0]) + ":" +
-                          str(obj.num_of_passed_cars[2][1])
+                              2))
+                          # str(obj.num_of_passed_cars[2][0]) + ":" +
+                          # str(obj.num_of_passed_cars[2][1])
                           )
                          )
         elif y_val_only_in_table:
@@ -81,10 +80,10 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                 "t = " + obj.simulation_time_label,
                 "$\\bf{Min.}$" + f"$\\bf{y_column_title}$",
                 "$\\bf{Max.}$" + f"$\\bf{y_column_title}$",
-                "$\\bf{Avg.}$" + f"$\\bf{y_column_title}$",
-                "$\\bf{Reached}$" + " " + "$\\bf{Dest.}$" +
-                "\n" +
-                "$\\bf{AV}$" + " : " + "$\\bf{HV}$"
+                "$\\bf{Avg.}$" + f"$\\bf{y_column_title}$"
+                # "$\\bf{Reached}$" + " " + "$\\bf{Dest.}$" +
+                # "\n" +
+                # "$\\bf{AV}$" + " : " + "$\\bf{HV}$"
             )
 
             cell_text = (("$\\bf{TL}$",
@@ -93,9 +92,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(y_vals[0]) / len(
                                   y_vals[0]),
-                              2)),
-                          str(obj.num_of_passed_cars[0][0]) + ":" +
-                          str(obj.num_of_passed_cars[0][1])
+                              2))
+                          # str(obj.num_of_passed_cars[0][0]) + ":" +
+                          # str(obj.num_of_passed_cars[0][1])
                           # + ":" + str(num_of_passed_cars[0][2])
                           ),
                          ("$\\bf{CAwSD4WI}$",
@@ -104,9 +103,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(y_vals[1]) / len(
                                   y_vals[1]),
-                              2)),
-                          str(obj.num_of_passed_cars[1][0]) + ":" +
-                          str(obj.num_of_passed_cars[1][1])
+                              2))
+                          # str(obj.num_of_passed_cars[1][0]) + ":" +
+                          # str(obj.num_of_passed_cars[1][1])
                           # + ":" + str(num_of_passed_cars[1][2])
                           ),
                          ("$\\bf{RN}$",
@@ -115,9 +114,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(y_vals[2]) / len(
                                   y_vals[2]),
-                              2)),
-                          str(obj.num_of_passed_cars[2][0]) + ":" +
-                          str(obj.num_of_passed_cars[2][1])
+                              2))
+                          # str(obj.num_of_passed_cars[2][0]) + ":" +
+                          # str(obj.num_of_passed_cars[2][1])
                           )
                          )
         else:
@@ -146,9 +145,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(y_vals[0]) / len(
                                   y_vals[0]),
-                              2)),
-                          str(obj.num_of_passed_cars[0][0]) + ":" +
-                          str(obj.num_of_passed_cars[0][1])
+                              2))
+                          # str(obj.num_of_passed_cars[0][0]) + ":" +
+                          # str(obj.num_of_passed_cars[0][1])
                           # + ":" + str(num_of_passed_cars[0][2])
                           ),
                          ("$\\bf{CAwSD4WI}$",
@@ -163,9 +162,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(y_vals[1]) / len(
                                   y_vals[1]),
-                              2)),
-                          str(obj.num_of_passed_cars[1][0]) + ":" +
-                          str(obj.num_of_passed_cars[1][1])
+                              2))
+                          # str(obj.num_of_passed_cars[1][0]) + ":" +
+                          # str(obj.num_of_passed_cars[1][1])
                           # + ":" + str(num_of_passed_cars[1][2])
                           ),
                          ("$\\bf{RN}$",
@@ -180,9 +179,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                           str(round(
                               sum(y_vals[2]) / len(
                                   y_vals[2]),
-                              2)),
-                          str(obj.num_of_passed_cars[2][0]) + ":" +
-                          str(obj.num_of_passed_cars[2][1])
+                              2))
+                          # str(obj.num_of_passed_cars[2][0]) + ":" +
+                          # str(obj.num_of_passed_cars[2][1])
                           # + ":" + str(num_of_passed_cars[2][2])
                           )
                          )
@@ -191,46 +190,49 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                              colLabels=col_label,
                              colWidths=[.1] * len(col_label),
                              loc='bottom',
-                             bbox=[0.0, -0.43, 0.70, 0.27])
+                             bbox=[0.0, -0.43, 1.0, 0.27])
 
+        the_table.auto_set_font_size(False)
+        the_table.set_fontsize(40)
         the_table.scale(1.0, 1.0)
 
-        for (row, col), cell in the_table.get_celld().items():
-            cell.set_text_props(
-                fontproperties=FontProperties(weight='normal', size=28))
+        # for (row, col), cell in the_table.get_celld().items():
+        #     cell.set_text_props(
+        #         fontproperties=FontProperties(weight='normal', size=58))
 
         cellDict = the_table.get_celld()
         for i in range(0, len(col_label)):
-            cellDict[(0, i)].set_height(.09)
+            cellDict[(0, i)].set_height(.1)
             for j in range(1, len(cell_text) + 1):
-                cellDict[(j, i)].set_height(.05)
+                cellDict[(j, i)].set_height(.07)
 
-        fig.text(0.762, .19,
+        fig.text(0.762, .24,
                  "$\\bf{Total}$" + " " + "$\\bf{AV}$:" + " " +
                  str(obj.total_av) + "   " +
                  "$\\bf{Total}$" + " " + "$\\bf{HV}$:" + " " +
                  str(obj.total_hv),
-                 fontsize=26)
+                 fontsize=28)
 
-        if y_column_title == "Density":
-            fig.text(0.682, .15,
-                     "Max. possible density is 100. Notice y axis.",
-                     fontsize=24)
+        if x_column_title == "Density":
+            pass
+            # fig.text(0.682, .14,
+            #          "Max. possible density is 100. Notice x axis.",
+            #          fontsize=26)
 
-            fig.text(0.682, .12,
-                     "Formula = (num of cars * 2.5m + average safe distance) / "
-                     "length of road",
-                     fontsize=24)
-
-            fig.text(0.682, .09,
-                     "Where 2.5m is average length of vehicle and length of "
-                     "road is 2400m",
-                     fontsize=24)
+            # fig.text(0.682, .10,
+            #          "Formula = (num of cars * 2.5m + average safe distance) / "
+            #          "length of road",
+            #          fontsize=26)
+            #
+            # fig.text(0.682, .06,
+            #          "Where 2.5m is average length of vehicle and length of "
+            #          "road is 2400m",
+            #          fontsize=26)
 
         if x_column_title == "Speed" or y_column_title == "Speed":
-            fig.text(0.682, .15,
-                     "Note that speed is in " + "$\\bf{miles}$" + "$\\bf{/}$" +
-                     "$\\bf{hr.}$", fontsize=24)
+            # fig.text(0.682, .18, "Note that speed is in " + "$\\bf{miles}$"
+            # + "$\\bf{/}$" + "$\\bf{hr.}$", fontsize=26)
+            pass
 
         # the_table.set_fontsize(30)
 
@@ -242,7 +244,7 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
               ('Traffic Lights',
                'Collision Avoidance w/ Safe Distance & 4 Way Intersection',
                'Reservation Nodes'),
-              fontsize=24)
+              fontsize=36)
 
     min_y = min([min(y_vals[0]), min(y_vals[1]), min(y_vals[2])])
 
@@ -254,6 +256,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
     if y_column_title == "Safe Dist.":
         min_y = min([min(y_vals[0]), min(y_vals[1]), min(y_vals[2])]) - 2.0
 
+    if y_column_title == "Speed":
+        max_y = max([max(y_vals[0]), max(y_vals[1]), max(y_vals[2])]) + 1.0
+
     if y_column_title == "React. Time":
         min_y = min([min(y_vals[0]), min(y_vals[1]), min(y_vals[2])]) - 0.1
 
@@ -263,14 +268,17 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
     ax.set_ylim(ymin=min_y, ymax=max_y + 0.1)
     ax.set_xlim(xmin=min_x, xmax=max_x + 1.0)
 
-    plt.xlabel(x_label, fontsize=26, labelpad=40,
-               fontweight='bold')
-    plt.ylabel(y_label, fontsize=26, labelpad=40,
-               fontweight='bold')
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     # x and y-axes labels
-    plt.xticks(fontsize=22)
-    plt.yticks(fontsize=22)
+    plt.xlabel(x_label, fontsize=40, labelpad=40,
+               fontweight='bold')
+    plt.ylabel(y_label, fontsize=40, labelpad=40,
+               fontweight='bold')
+
+    plt.xticks(fontsize=30)
+    plt.yticks(fontsize=30)
 
     fig.subplots_adjust(bottom=0.3)
     print(all_fp + file_title + '.png')

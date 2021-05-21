@@ -33,8 +33,8 @@ class CarSpawner(EnvironmentObject):
                          direction=direction, car_ratio=car_ratio)
 
         if 'Aggressive' in name:
-            self.safe_distance = round(random.uniform(20, 25), 4)
-            self.reaction_time = round(random.uniform(0.3, 1.0), 4)
+            self.safe_distance = round(random.uniform(15, 20), 4)
+            self.reaction_time = round(random.uniform(0.3, 1.6), 4)
         else:
             self.safe_distance = round(random.uniform(15, 20), 4)
             self.reaction_time = round(random.uniform(0.1, 0.3), 4)
@@ -42,9 +42,9 @@ class CarSpawner(EnvironmentObject):
         if self.capacity == 50:
             # Half traffic
             if 'Aggressive' in name:
-                self.spawning_distance = randint(40, 50)
+                self.spawning_distance = self.safe_distance + randint(20, 25)
             else:
-                self.spawning_distance = randint(30, 40)
+                self.spawning_distance = self.safe_distance + randint(15, 20)
         else:
             # Full traffic
             if 'Aggressive' in name:
@@ -131,7 +131,7 @@ class CarSpawner(EnvironmentObject):
             name=self.name[:-7] + str(len([car for car in
                                            self.environment.environment_objects[
                                                Car] if
-                                           self.name in car.name]) + 1),
+                                           self.name[:-7] in car.name]) + 1),
             position=self.node.position,
             route=route,
             route_list=self.route_list,

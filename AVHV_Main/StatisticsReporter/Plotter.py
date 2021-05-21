@@ -104,23 +104,23 @@ class StandardPlotter:
             write.writerow(self.fields_2)
             write.writerows(key_variables_2)
 
-        plot_traffic(self, self.traffic_flow, self.car_densities,
+        plot_traffic(self, self.car_densities, self.traffic_flow,
                      'Traffic Flow vs Density',
+                     'Density (vehicle / mile)',
                      'Traffic Flow (vehicle / hr)',
-                     'Density (vehicle / mile)',
-                     all_fp, 'flow-density', 'Flow', 'Density')
+                     all_fp, 'flow-density', 'Density', 'Volume')
 
-        plot_traffic(self, self.car_speeds, self.car_densities,
+        plot_traffic(self, self.car_densities, self.car_speeds,
                      'Speed vs Density',
-                     'Speed (miles / hr)',
                      'Density (vehicle / mile)',
-                     all_fp, 'speed-density', 'Speed', 'Density')
+                     'Speed (miles / hr)',
+                     all_fp, 'speed-density', 'Density', 'Speed')
 
         plot_traffic(self, self.traffic_flow, self.car_speeds,
                      'Traffic Flow vs Speed',
                      'Traffic flow (vehicle / hr)',
                      'Speed (miles / hr)',
-                     all_fp, 'flow-speed', 'Flow', 'Speed')
+                     all_fp, 'flow-speed', 'Volume', 'Speed')
 
         plot_traffic(self, self.time_graduation, self.safe_distances,
                      'Safe Distance over Time',
@@ -133,7 +133,7 @@ class StandardPlotter:
                      'Reaction Time over Time',
                      'Time (secs)',
                      'Reaction Time (secs)',
-                     all_fp, 'reaction_time', y_column_title='React. Time',
+                     all_fp, 'reaction_time', y_column_title='R. Time',
                      y_val_only_in_table=True)
 
     def plot(self):

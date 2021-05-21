@@ -20,7 +20,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4a5ba40-8e3c-4e40-9ad4-347d8bce504f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/csv-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -230,18 +229,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.test_case_scenario" />
-      <item itemvalue="Python.constants" />
-      <item itemvalue="Python.run_standard" />
-      <item itemvalue="Python.run" />
-      <item itemvalue="Python.fix_errors" />
       <item itemvalue="Python.CarSpawner" />
+      <item itemvalue="Python.constants" />
+      <item itemvalue="Python.fix_errors" />
+      <item itemvalue="Python.run" />
+      <item itemvalue="Python.run_standard" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.run" />
+        <item itemvalue="Python.constants" />
         <item itemvalue="Python.CarSpawner" />
         <item itemvalue="Python.fix_errors" />
-        <item itemvalue="Python.constants" />
         <item itemvalue="Python.run_standard" />
       </list>
     </recent_temporary>

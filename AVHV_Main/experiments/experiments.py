@@ -300,13 +300,11 @@ def run_ratio_experiments(capacity=100):
         file_path_CAwSD4WI = file_path_CAwSD4WI_50
         file_path = file_path_50
         experiment_results_path = experiment_results_path_50
-        experiment_summary_path = experiment_summary_path_50
     else:
         file_path_TL = file_path_TL_100
         file_path_CAwSD4WI = file_path_CAwSD4WI_100
         file_path = file_path_100
         experiment_results_path = experiment_results_path_100
-        experiment_summary_path = experiment_summary_path_100
 
     with open(experiment_results_path + "occupancy_matrix_results.csv", "w",
               encoding="utf8") as h:

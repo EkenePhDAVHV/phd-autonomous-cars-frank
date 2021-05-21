@@ -440,11 +440,16 @@ class Simulation:
                 self.safe_distances.append(0.0)
                 average_safe_distance = 0
 
-            # Density = (num. of cars * 2.5m + car_safe_distance) / 2400m,
-            # assuming an average length of 2.5m per vehicle.
+            # Density (%) = (num. of cars * (2.5m + car_safe_distance) -
+            # average_distance) * 100 / 2400m, assuming an average length of
+            # 2.5m per vehicle.
+
+            # Subtract one of the safe_distances because the first car has no
+            # safe distance to keep.
             self.car_density.append(
-                round(len(self.environment.environment_objects[Car]) *
-                      (2.5 + average_safe_distance) / (2400), 2))
+                round((len(self.environment.environment_objects[Car]) *
+                       (2.5 + average_safe_distance) - average_safe_distance) *
+                      100 / 2400, 2))
 
             try:
                 self.reaction_times.append(round(sum(reaction_times) / len(
@@ -481,7 +486,13 @@ class Simulation:
                                                          car in
                                                          no_label_objects])
 
-                self.total_braked_cars += len(self.environment.cars_braked)
+                try:
+                    self.total_braked_cars += len(
+                        self.environment.cars_braked) * \
+                                              1000 / len(
+                        self.environment.environment_objects[Car])
+                except ZeroDivisionError:
+                    self.total_braked_cars += 0
 
                 try:
                     self.av_averages_safe_distance += \

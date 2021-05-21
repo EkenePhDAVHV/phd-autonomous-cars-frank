@@ -34,12 +34,12 @@ class EnvironmentObject:
         self.position = Vector2(position)
 
         # Don't start from zero velocity.
-        if "car" in self.name.lower() and "spawner" not in self.name.lower():
-            self.velocity = Vector2(0)
-            self.velocity.x = max_velocity * math.cos(self.direction)
-            self.velocity.y = max_velocity * math.sin(self.direction)
-        else:
-            self.velocity = Vector2(velocity)
+        # if "car" in self.name.lower() and "spawner" not in self.name.lower():
+        #     self.velocity = Vector2(0)
+        #     self.velocity.x = max_velocity * math.cos(self.direction)
+        #     self.velocity.y = max_velocity * math.sin(self.direction)
+        # else:
+        self.velocity = Vector2(velocity)
 
         if acceleration is not None:
             if isinstance(acceleration, int):

@@ -8,7 +8,10 @@ from datetime import datetime
 
 import pickle
 
+import numpy as np
+
 from AVHV_Main.Utilities.checkpoint import load_checkpoint, save_checkpoint
+from AVHV_Main.Utilities.constants import simulation_time
 
 import matplotlib.pyplot as plt
 from svgwrite import Drawing
@@ -369,37 +372,82 @@ class Simulation:
                 self.draw_metrics_plots()
 
     def draw_metrics_plots(self):
+        if simulation_time >= 60:
+            simulation_time_label = str(round(simulation_time / 60, 1)) + \
+                                    " min(s)"
+        elif simulation_time >= 3600:
+            simulation_time_label = str(round(simulation_time / 3600, 2
+                                              )) + " hr(s)"
+        else:
+            simulation_time_label = str(simulation_time) + " sec(s)"
+
         file_path = "../" + self.file_path.split("/")[1] + "/"
 
         data = [self.experiment_values,
                 self.simulation_TL_values,
                 self.simulation_CAwSD4WI_values]
 
-        plt.figure(figsize=(10, 10))
         labels = ['RN', 'TL', 'CAwSD4WI']
-        plot_file_names = ['Capacity', 'Occurred Braking',
-                           'Average Safe Distance (AV)',
-                           'Average Safe Distance (HV)',
-                           'Capacity AV - car(s) per min',
-                           'Capacity HV - car(s) per min',
-                           'Total Simulation Time (s)']
+        plot_file_names = [
+            {'title': 'Collisions Prevented',
+             'y-label': 'Number of Collisions Prevented'},
+            {'title': 'Occurred Collisions ',
+             'y-label': 'Occurred Collisions'},
+            {'title': 'Traffic Flow Stability',
+             'y-label': 'Number of Braking per Min'},
+            {'title': 'Average Safe Distance (AV)',
+             'y-label': 'Average Safe Distance - AV (metres)'},
+            {'title': 'Average Safe Distance (HV)',
+             'y-label': 'Average Safe Distance - HV (metres)'},
+            {'title': 'Control Method Efficiency Assessment (AV)',
+             'y-label': 'Number of Vehicles per Min.'},
+            {'title': 'Control Method Efficiency Assessment (HV)',
+             'y-label': 'Number of Vehicles per Min.'},
+            {'title': 'Travel Time Assessment',
+             'y-label': 'Travel Time (secs)'}
+        ]
 
-        for i in range(7):
+        for i in range(len(plot_file_names)):
             values = [data[0][i], data[1][i], data[2][i]]
-            plt.title(plot_file_names[i])
 
-            if i == 2 or i == 3:
+            fig, ax = plt.subplots()
+            fig.set_size_inches(40, 20)
+
+            plt.title(plot_file_names[i]['title'])
+            ax.set_title(
+                plot_file_names[i]['title'] + ' - ' + simulation_time_label,
+                fontsize=50, pad=50, fontweight='bold')
+
+            ax.set_facecolor("#EAEAF2")
+            plt.grid(color="#FFFFFF")
+
+            if i == 3 or i == 4:
                 plt.barh(labels, values)
-                plt.xlabel('Number of Cars')
-                plt.ylabel('Experiment Method')
+                plt.xlabel(plot_file_names[i]['y-label'], fontsize=42,
+                           labelpad=40, fontweight='bold')
+                plt.ylabel('Control Method', fontsize=42, labelpad=50,
+                           fontweight='bold')
+                ax.set_xlim(xmin=0)
+                plt.xticks(np.arange(0,
+                                     max([values[0], values[1], values[2]]) +
+                                     1, 1),
+                           fontsize=34)
             else:
                 plt.bar(labels, values)
-                plt.xlabel('Experiment Method')
-                plt.ylabel('Number of Cars')
+                plt.xlabel('Control Method', fontsize=42, labelpad=50,
+                           fontweight='bold')
+                plt.ylabel(plot_file_names[i]['y-label'], fontsize=42,
+                           labelpad=40, fontweight='bold')
+                ax.set_ylim(ymin=0)
 
-            plt.tight_layout(pad=2)
+            print(data[0][i], data[1][i], data[2][i])
+
+            plt.xticks(fontsize=34)
+            plt.yticks(fontsize=34)
+
+            fig.subplots_adjust(bottom=0.2)
             plt.savefig(
-                f"{self.experiment_summary_path}{plot_file_names[i]}.png")
+                f"{self.experiment_summary_path}{plot_file_names[i]['title']}.png")
             plt.close()
 
     def __calculate_blank(self):
@@ -856,7 +904,7 @@ class Simulation:
                                   round(self.hv_average_safe_distance, 2),
                                   round(self.throughput_capacity_av, 2),
                                   round(self.throughput_capacity_hv, 2),
-                                  round(self.current_time, 2),
+                                  round(self.completion_time, 2),
                                   self.traffic_flow,
                                   self.car_density,
                                   self.car_speed,

@@ -126,14 +126,14 @@ class StandardPlotter:
                      'Safe Distance over Time',
                      'Time (secs)',
                      'Safe Distance (m)',
-                     all_fp, 'safe_distance', y_column_title='Safe Dist.',
+                     all_fp, 'safe_distance', 'Safe Dist.',
                      y_val_only_in_table=True)
 
         plot_traffic(self, self.time_graduation, self.reaction_times,
                      'Reaction Time over Time',
                      'Time (secs)',
                      'Reaction Time (secs)',
-                     all_fp, 'reaction_time', y_column_title='R. Time',
+                     all_fp, 'reaction_time', 'R. Time',
                      y_val_only_in_table=True)
 
     def plot(self):
@@ -160,6 +160,8 @@ class OccupancyMatrixPlotter:
         occupancy_times = [[], [], []]
         ratio_codes = []
 
+        starting_point = 100
+
         with open(all_fp + 'occupancy_matrix_results.csv', 'r') as f:
 
             # using csv.writer method from CSV package
@@ -170,12 +172,13 @@ class OccupancyMatrixPlotter:
                     occupancy_times[0].append(float(line[3]))
                     occupancy_times[1].append(float(line[4]))
                     occupancy_times[2].append(float(line[5]))
-                    ratio_codes.append(int(line[0]))
+                    ratio_codes.append(starting_point)
+                    starting_point -= 5
 
         plot_occupancy_matrix(self, ratio_codes, occupancy_times,
                               'Occupancy Time Matrix',
-                              'Ratio Code',
-                              'Occupancy Time (secs)',
+                              'AV:HV Ratio',
+                              'Occupation Time (secs)',
                               all_fp, 'occupancy_time_matrix')
 
     def plot(self):

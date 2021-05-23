@@ -34,10 +34,12 @@ class CarSpawner(EnvironmentObject):
 
         if 'Aggressive' in name:
             self.safe_distance = round(random.uniform(15, 20), 4)
-            self.reaction_time = round(random.uniform(0.3, 1.6), 4)
+            self.reaction_time = 0.3
+            # self.reaction_time = round(random.uniform(0.3, 1.6), 4)
         else:
             self.safe_distance = round(random.uniform(15, 20), 4)
-            self.reaction_time = round(random.uniform(0.1, 0.3), 4)
+            self.reaction_time = 0.1
+            # self.reaction_time = round(random.uniform(0.1, 0.3), 4)
 
         if self.capacity == 50:
             # Half traffic

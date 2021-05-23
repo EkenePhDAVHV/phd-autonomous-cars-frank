@@ -279,24 +279,24 @@ class Car(EnvironmentObject):
 
         super().physics_update(t)
 
-        # if self.acceleration.magnitude() > 0.0:
-        #     self.reaction_time = 0.1
-        #     random_factor = 1.0
-        #
-        #     if 'Aggressive' in self.name:
-        #         self.reaction_time = round(random.uniform(0.3, 0.75), 2)
-        #
-        #         random_factor = round(random.uniform(1.0, 3.0), 1)
-        #
-        #     self.safe_distance = round(self.velocity.magnitude() * \
-        #                                random_factor * \
-        #                                self.reaction_time + \
-        #                                math.sqrt(
-        #                                    math.pow(self.velocity.magnitude(),
-        #                                             2) / \
-        #                                    self.acceleration.magnitude()) +
-        #                                self.reaction_time,
-        #                                2)
+        if self.acceleration.magnitude() > 0.0:
+            self.reaction_time = 0.1
+            random_factor = 1.0
+
+            if 'Aggressive' in self.name:
+                self.reaction_time = round(random.uniform(0.3, 0.75), 2)
+
+                random_factor = round(random.uniform(1.0, 3.0), 1)
+
+            self.safe_distance = round(self.velocity.magnitude() * \
+                                       random_factor * \
+                                       self.reaction_time + \
+                                       math.sqrt(
+                                           math.pow(self.velocity.magnitude(),
+                                                    2) / \
+                                           self.acceleration.magnitude()) +
+                                       self.reaction_time,
+                                       2)
 
     def reach_node(self):
         self.position = self.route[0].position.copy()

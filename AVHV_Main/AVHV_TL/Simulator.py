@@ -503,14 +503,14 @@ class Simulation:
                         round(self.av_total_safe_distance / (len(
                             av_objects)), 2)
                 except ZeroDivisionError:
-                    self.av_average_safe_distance = 0
+                    self.av_averages_safe_distance = 0
 
                 try:
                     self.hv_averages_safe_distance += \
                         round(self.hv_total_safe_distance / (len(
                             hv_objects)), 2)
                 except ZeroDivisionError:
-                    self.hv_average_safe_distance = 0
+                    self.hv_averages_safe_distance = 0
 
                 try:
                     self.no_label_averages_safe_distance += \
@@ -571,7 +571,7 @@ class Simulation:
                                   round(self.hv_average_safe_distance, 2),
                                   round(self.throughput_capacity_av, 2),
                                   round(self.throughput_capacity_hv, 2),
-                                  round(self.current_time, 2),
+                                  round(self.completion_time, 2),
                                   self.traffic_flow,
                                   self.car_density,
                                   self.car_speed,

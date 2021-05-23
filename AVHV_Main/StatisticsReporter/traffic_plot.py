@@ -13,9 +13,9 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
     ax.set_facecolor("#EAEAF2")
 
     try:
-        ax.set_title(
-            title + ' - ' + obj.simulation_time_label,
-            fontsize=50, pad=50, fontweight='bold')
+        # ax.set_title(
+        #     title + ' - ' + obj.simulation_time_label,
+        #     fontsize=50, pad=50, fontweight='bold')
 
         # subset the first list in case the time list is longer.
         p1 = ax.plot(x_vals[0][:len(y_vals[0])], y_vals[0],
@@ -127,10 +127,10 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
                 "$\\bf{Avg.}$" + f"$\\bf{x_column_title}$",
                 "$\\bf{Min.}$" + f"$\\bf{y_column_title}$",
                 "$\\bf{Max.}$" + f"$\\bf{y_column_title}$",
-                "$\\bf{Avg.}$" + f"$\\bf{y_column_title}$",
-                "$\\bf{Reached}$" + " " + "$\\bf{Dest.}$" +
-                "\n" +
-                "$\\bf{AV}$" + " : " + "$\\bf{HV}$"
+                "$\\bf{Avg.}$" + f"$\\bf{y_column_title}$"
+                # "$\\bf{Reached}$" + " " + "$\\bf{Dest.}$" +
+                # "\n" +
+                # "$\\bf{AV}$" + " : " + "$\\bf{HV}$"
             )
 
             cell_text = (("$\\bf{TL}$",
@@ -206,35 +206,12 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
             for j in range(1, len(cell_text) + 1):
                 cellDict[(j, i)].set_height(.07)
 
-        fig.text(0.762, .24,
-                 "$\\bf{Total}$" + " " + "$\\bf{AV}$:" + " " +
-                 str(obj.total_av) + "   " +
-                 "$\\bf{Total}$" + " " + "$\\bf{HV}$:" + " " +
-                 str(obj.total_hv),
-                 fontsize=28)
-
-        if x_column_title == "Density":
-            pass
-            # fig.text(0.682, .14,
-            #          "Max. possible density is 100. Notice x axis.",
-            #          fontsize=26)
-
-            # fig.text(0.682, .10,
-            #          "Formula = (num of cars * 2.5m + average safe distance) / "
-            #          "length of road",
-            #          fontsize=26)
-            #
-            # fig.text(0.682, .06,
-            #          "Where 2.5m is average length of vehicle and length of "
-            #          "road is 2400m",
-            #          fontsize=26)
-
-        if x_column_title == "Speed" or y_column_title == "Speed":
-            # fig.text(0.682, .18, "Note that speed is in " + "$\\bf{miles}$"
-            # + "$\\bf{/}$" + "$\\bf{hr.}$", fontsize=26)
-            pass
-
-        # the_table.set_fontsize(30)
+        # fig.text(0.762, .24,
+        #          "$\\bf{Total}$" + " " + "$\\bf{AV}$:" + " " +
+        #          str(obj.total_av) + "   " +
+        #          "$\\bf{Total}$" + " " + "$\\bf{HV}$:" + " " +
+        #          str(obj.total_hv),
+        #          fontsize=28)
 
     except Exception as e:
         print(e)
@@ -272,13 +249,13 @@ def plot_traffic(obj, x_vals, y_vals, title, x_label, y_label, all_fp,
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     # x and y-axes labels
-    plt.xlabel(x_label, fontsize=40, labelpad=40,
+    plt.xlabel(x_label, fontsize=42, labelpad=40,
                fontweight='bold')
-    plt.ylabel(y_label, fontsize=40, labelpad=40,
+    plt.ylabel(y_label, fontsize=42, labelpad=40,
                fontweight='bold')
 
-    plt.xticks(fontsize=30)
-    plt.yticks(fontsize=30)
+    plt.xticks(fontsize=34)
+    plt.yticks(fontsize=34)
 
     fig.subplots_adjust(bottom=0.3)
     print(all_fp + file_title + '.png')

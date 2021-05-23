@@ -2,6 +2,8 @@ from copy import copy
 import numpy as np
 import matplotlib.pyplot as plt
 
+from AVHV_Main.Utilities.constants import simulation_time
+
 
 def plot_velocity_graph(cars, file_path):
     time_lists = []
@@ -84,7 +86,6 @@ def plot_velocity_graph(cars, file_path):
     # plt.savefig(file_path + "speed-time" + ".png")
 
     # Use the last's cars simulation time as the limit.
-    simulation_time = t_[9][-1]
 
     if simulation_time >= 60:
         simulation_time_label = str(round(simulation_time / 60, 1)) + \
@@ -97,13 +98,14 @@ def plot_velocity_graph(cars, file_path):
 
     try:
         fig, ax = plt.subplots()
-        fig.set_size_inches(40, 25)
+        fig.set_size_inches(50, 30)
 
         ax.set_facecolor("#EAEAF2")
 
-        ax.set_title(
-            "Speed over Time" + ' - ' + simulation_time_label,
-            fontsize=50, pad=50, fontweight='bold')
+        # ax.set_title(
+        #     "Speed over Time" + ' - ' + simulation_time_label,
+        #     fontsize=50, pad=50, fontweight='bold')
+
         p1 = ax.plot(t_[0], s_[0],
                      color='red', linewidth=4.0,
                      marker='o', markersize=16)
@@ -153,7 +155,7 @@ def plot_velocity_graph(cars, file_path):
                    cars_long_names[8],
                    cars_long_names[9]
                    ),
-                  fontsize=36)
+                  fontsize=38)
 
         col_label = (
             "t = " + simulation_time_label,
@@ -192,6 +194,18 @@ def plot_velocity_graph(cars, file_path):
                       str(round(max(s_[7]), 2)),
                       str(round(max(s_[8]), 2)),
                       str(round(max(s_[9]), 2))
+                      ), 
+                     ("$\\bf{Total}$",
+                      str(round(sum(s_[0]), 2)),
+                      str(round(sum(s_[1]), 2)),
+                      str(round(sum(s_[2]), 2)),
+                      str(round(sum(s_[3]), 2)),
+                      str(round(sum(s_[4]), 2)),
+                      str(round(sum(s_[5]), 2)),
+                      str(round(sum(s_[6]), 2)),
+                      str(round(sum(s_[7]), 2)),
+                      str(round(sum(s_[8]), 2)),
+                      str(round(sum(s_[9]), 2))
                       ),
                      ("$\\bf{Average}$",
                       str(round(sum(s_[0]) / len(s_[0]), 2)),
@@ -213,7 +227,7 @@ def plot_velocity_graph(cars, file_path):
                              bbox=[0.0, -0.43, 1.0, 0.27])
 
         the_table.auto_set_font_size(False)
-        the_table.set_fontsize(40)
+        the_table.set_fontsize(44)
         the_table.scale(1.0, 1.0)
 
         # for (row, col), cell in the_table.get_celld().items():
@@ -231,10 +245,7 @@ def plot_velocity_graph(cars, file_path):
         cellDict[(1, 0)].set_width(0.25)
         cellDict[(2, 0)].set_width(0.25)
         cellDict[(3, 0)].set_width(0.25)
-
-        # fig.text(0.682, .198,
-        #          "Note that speed is in " + "$\\bf{miles}$" + "$\\bf{/}$" +
-        #          "$\\bf{hr.}$", fontsize=24)
+        cellDict[(4, 0)].set_width(0.25)
 
         min_y = min([min(s_[0]),
                      min(s_[1]),
@@ -286,13 +297,13 @@ def plot_velocity_graph(cars, file_path):
         ax.set_xlim(xmin=min_x, xmax=max_x + 1.0)
 
         # x and y-axes labels
-        plt.xlabel("Time (secs)", fontsize=40, labelpad=40,
+        plt.xlabel("Time (secs)", fontsize=42, labelpad=40,
                    fontweight='bold')
-        plt.ylabel("Speed (miles / hr)", fontsize=40, labelpad=40,
+        plt.ylabel("Speed (miles / hr)", fontsize=42, labelpad=40,
                    fontweight='bold')
 
-        plt.xticks(np.arange(min_x, max_x + 1.0, 1.0), fontsize=30)
-        plt.yticks(np.arange(min_y, max_y + 1.0, 1.0), fontsize=30)
+        plt.xticks(np.arange(min_x, max_x + 1.0, 1.0), fontsize=34)
+        plt.yticks(np.arange(min_y, max_y + 1.0, 1.0), fontsize=34)
 
         fig.subplots_adjust(bottom=0.3)
         print(file_path + "speed-time" + '.png')
